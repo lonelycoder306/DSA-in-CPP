@@ -10,8 +10,8 @@ int main()
     Array<int> array1(0);
     for (int i = 0; i < 10; i++)
         array1.add(i + 1);
-    for (int i = 0; i < 10; i++)
-        std::cout << array1[i] << '\n';
+    for (int* i = array1.begin(); i < array1.end(); i++)
+        std::cout << *i << '\n';
     array1.pop();
     
     Array<int> array2 = array1;

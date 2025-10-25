@@ -32,6 +32,8 @@ class Array
         T& pop();
         size_t size();
         size_t maxSize();
+        T* begin();
+        T* end();
 };
 
 TEMP
@@ -171,4 +173,16 @@ TEMP
 size_t Array<T>::maxSize()
 {
     return capacity;
+}
+
+TEMP
+T* Array<T>::begin()
+{
+    return entries;
+}
+
+TEMP
+T* Array<T>::end()
+{
+    return entries + count;
 }
