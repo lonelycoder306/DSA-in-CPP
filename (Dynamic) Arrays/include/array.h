@@ -27,7 +27,7 @@ class Array
         bool operator==(const Array<T>& other);
 
         // Utility.
-        void resize();
+        void grow();
 
         void add(T element);
         T& pop();
@@ -136,7 +136,7 @@ bool Array<T>::operator==(const Array<T>& other)
 }
 
 TEMP
-void Array<T>::resize()
+void Array<T>::grow()
 {
     capacity = (capacity == 0 ? 8 : capacity * 2);
     T* newEntries = new T[capacity];
@@ -151,7 +151,7 @@ TEMP
 void Array<T>::add(T element)
 {
     if (capacity <= count)
-        resize();
+        grow();
     entries[(int) count++] = element;
 }
 
