@@ -12,8 +12,6 @@ class Array
         size_t count;
         size_t capacity;
 
-        void resize();
-
     public:
         // Constructing Array objects.
         Array();
@@ -27,6 +25,9 @@ class Array
         // Basic operators.
         T& operator[](int index);
         bool operator==(const Array<T>& other);
+
+        // Utility.
+        void resize();
 
         void add(T element);
         T& pop();
@@ -137,9 +138,6 @@ bool Array<T>::operator==(const Array<T>& other)
 TEMP
 void Array<T>::resize()
 {
-    if (capacity > count)
-        return;
-
     capacity = (capacity == 0 ? 8 : capacity * 2);
     T* newEntries = new T[capacity];
     for (int i = 0; i < (int) count; i++)
@@ -152,7 +150,8 @@ void Array<T>::resize()
 TEMP
 void Array<T>::add(T element)
 {
-    resize();
+    if (capacity <= count)
+        resize();
     entries[(int) count++] = element;
 }
 
