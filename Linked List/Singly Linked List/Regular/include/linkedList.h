@@ -16,6 +16,8 @@ class LinkedList
         ~LinkedList();
 
         int length();
+        ListNode<T>* front();
+        ListNode<T>* end();
 
         void prepend(T object);
         void append(T object);
@@ -26,6 +28,7 @@ class LinkedList
         ListNode<T>* at(int position);
         ListNode<T>* get(T object);
         void sort(bool ascending = true);
+        void merge(LinkedList<T>& other);
 };
 
 TEMP
@@ -52,6 +55,18 @@ TEMP
 int LinkedList<T>::length()
 {
     return listLength;
+}
+
+TEMP
+ListNode<T>* LinkedList<T>::front()
+{
+    return head;
+}
+
+TEMP
+ListNode<T>* LinkedList<T>::end()
+{
+    return this->at(length() - 1);
 }
 
 TEMP
@@ -256,4 +271,11 @@ void LinkedList<T>::sort(bool ascending)
             second = second->next;
         }
     }
+}
+
+TEMP
+void LinkedList<T>::merge(LinkedList<T>& other)
+{
+    end()->next = other.head;
+    this->listLength += other.listLength;
 }
