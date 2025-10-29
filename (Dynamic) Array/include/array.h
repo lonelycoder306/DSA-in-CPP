@@ -23,7 +23,7 @@ class Array
         ~Array();
 
         // Basic operators.
-        T& operator[](int index);
+        T& operator[](int index); // index < count.
         bool operator==(const Array<T>& other);
 
         // Utility.
@@ -35,12 +35,13 @@ class Array
         size_t maxSize();
         T* begin();
         T* end();
+        T& raw(int index); // index < capacity.
 };
 
 TEMP
 Array<T>::Array()
 {
-    entries = new T[0]; // Empty list to start with.
+    entries = nullptr; // Well-defined to call delete[] on nullptr.
     count = 0;
     capacity = 0;
 }
@@ -115,8 +116,8 @@ Array<T>::~Array()
 TEMP
 T& Array<T>::operator[](int index)
 {
-    // Temporary implementation.
-    // No error handling.
+    if ((index < 0) || ((size_t) index >= count))
+        throw std::out_of_range("Invalid index.");
 
     return entries[index];
 }
@@ -184,4 +185,12 @@ TEMP
 T* Array<T>::end()
 {
     return entries + count;
+}
+
+TEMP
+T& Array<T>::raw(int index)
+{
+    if ((index < 0) || ((size_t) index >= capacity))
+        throw std::out_of_range("Invalid index.");
+    return entries[index];
 }
