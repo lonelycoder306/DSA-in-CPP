@@ -29,6 +29,8 @@ class LinkedList
         ListNode<T>* get(T object);
         void sort(bool ascending = true);
         void merge(LinkedList<T>& other);
+
+        friend LinkedList<T> copy(const LinkedList<T>& list);
 };
 
 TEMP
@@ -278,4 +280,17 @@ void LinkedList<T>::merge(LinkedList<T>& other)
 {
     end()->next = other.head;
     this->listLength += other.listLength;
+}
+
+TEMP
+LinkedList<T> copy(const LinkedList<T>& list)
+{
+    int length = list.length();
+    LinkedList<T> newList;
+
+    for (int i = 0; i < length; i++)
+        // Uses copy constructor(?) for T object.
+        newList.append(list.at(i)->object);
+    
+    return newList;
 }
