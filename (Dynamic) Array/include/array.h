@@ -51,8 +51,8 @@ Array<T>::Array(int size)
     if (size < 0)
         throw std::out_of_range("Negative index cannot be used.");
     entries = new T[size];
-    count = (size_t)size;
-    capacity = (size_t)size;
+    count = (size_t) size;
+    capacity = (size_t) size;
 }
 
 TEMP
