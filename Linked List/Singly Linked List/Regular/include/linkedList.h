@@ -127,10 +127,10 @@ void LinkedList<T>::insert(T object, int position)
         current = current->next;
     }
 
-    if (previous != nullptr)
-        previous->next = newNode;
-    else // We're adding it at the beginning.
+    if (previous == nullptr) // We're adding it at the beginning.
         head = newNode;
+    else
+        previous->next = newNode;
     
     newNode->next = current;
     listLength++;
@@ -155,7 +155,9 @@ void LinkedList<T>::remove(int position)
 
     if (previous == nullptr) // Removing the head.
     {
+        ListNode<T>* temp = head;
         head = head->next;
+        delete temp;
         return;
     }
 
@@ -262,7 +264,7 @@ void LinkedList<T>::sort(bool ascending)
             }
             else
             {
-                if (first->object < second->object) // Problem with this one.
+                if (first->object < second->object)
                 {
                     swap(first, second);
                     ordered = false;
