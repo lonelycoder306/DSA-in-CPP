@@ -1,3 +1,4 @@
+#pragma once
 #include "../../General/list.h"
 
 #define TEMP template<typename T>
