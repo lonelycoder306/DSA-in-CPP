@@ -32,8 +32,11 @@ class Array
         void grow();
 
         void add(T element);
+        int position(T element);
         void insert(T element, int index);
-        T& pop();
+        T erase(int index);
+        void remove(T element);
+        T pop();
         size_t count();
         size_t capacity();
         T* front();
@@ -97,7 +100,7 @@ Array<T>::Array(int size)
 {
     if (size < 0)
         throw std::out_of_range("Negative index cannot be used.");
-    entries = new T[size];
+    entries = static_cast<T*>(::operator new(sizeof(T) * size));
     _count = (size_t) 0; // No elements used at time of construction.
     _capacity = (size_t) size;
 }
@@ -107,7 +110,7 @@ Array<T>::Array(const Array<T>& other)
 {
     this->entries = new T[other._capacity];
 
-    for (int i = 0; i < (int) this->_count; i++)
+    for (size_t i = 0; i < this->_count; i++)
         this->entries[i] = other.entries[i];
 
     this->_count = other._count;
@@ -129,29 +132,36 @@ Array<T>::Array(Array<T>&& other)
 TEMP
 Array<T>& Array<T>::operator=(const Array<T>& other)
 {
-    delete[] this->entries;
-    this->entries = new T[other._capacity];
+    if (this != &other)
+    {
+        delete[] this->entries;
+        this->entries = new T[other._capacity];
 
-    for (int i = 0; i < (int) this->_count; i++)
-        this->entries[i] = other.entries[i];
+        for (size_t i = 0; i < this->_count; i++)
+            this->entries[i] = other.entries[i];
 
-    this->_count = other._count;
-    this->_capacity = other._capacity;
+        this->_count = other._count;
+        this->_capacity = other._capacity;
+    }
+
     return *this;
 }
 
 TEMP
 Array<T>& Array<T>::operator=(Array<T>&& other)
 {
-    delete[] this->entries;
+    if (this != &other)
+    {
+        delete[] this->entries;
 
-    this->entries = other.entries;
-    this->_count = other._count;
-    this->_capacity = other._capacity;
+        this->entries = other.entries;
+        this->_count = other._count;
+        this->_capacity = other._capacity;
 
-    other.entries = nullptr;
-    other._count = 0;
-    other._capacity = 0;
+        other.entries = nullptr;
+        other._count = 0;
+        other._capacity = 0;
+    }
 
     return *this;
 }
@@ -178,7 +188,7 @@ bool Array<T>::operator==(const Array<T>& other)
 {
     if (this->_count != other._count) return false;
 
-    for (int i = 0; i < (int) this->_count; i++)
+    for (size_t i = 0; i < this->_count; i++)
     {
         if (this->entries[i] != other.entries[i])
             return false;
@@ -191,7 +201,7 @@ TEMP
 void Array<T>::grow()
 {
     _capacity = (_capacity == 0 ? 8 : _capacity * 2);
-    T* newEntries = new T[_capacity];
+    T* newEntries = static_cast<T*>(::operator new(sizeof(T) * _capacity));
     for (int i = 0; i < (int) _count; i++)
         newEntries[i] = std::move(entries[i]);
     delete[] entries;
@@ -208,7 +218,19 @@ void Array<T>::add(T element)
     entries[(int) _count++] = element;
 }
 
-// When using this function, the unshifted
+TEMP
+int Array<T>::position(T element)
+{
+    for (size_t i = 0; i < _count; i++)
+    {
+        if (entries[i] == element)
+            return (int) i;
+    }
+
+    return -1;
+}
+
+// When using this function, any unshifted
 // buffer area in the array must be replaced/
 // initialized immediately to maintain
 // the contiguous storage of elements in the array.
@@ -218,7 +240,13 @@ void Array<T>::shift(int shift, int start)
     if ((shift == 0) || (_count == 0)) // Nothing to do.
         return;
 
-    if (shift < 0)
+    // We allow the shift to be negative
+    // for element removal.
+    // Just need to be careful when using
+    // that internally.
+
+    // Can't be too negative, though.
+    if (shift < (-1 * _count))
         return; // Throw error?
 
     if ((start < 0) || (start >= _count))
@@ -252,7 +280,7 @@ TEMP
 void Array<T>::insert(T element, int index)
 {
     if ((index < 0) || (index >= _count))
-        return; // Throw error?
+        throw std::out_of_range("Invalid index.");
     
     if (_capacity <= _count)
         grow();
@@ -263,7 +291,32 @@ void Array<T>::insert(T element, int index)
 }
 
 TEMP
-T& Array<T>::pop()
+T Array<T>::erase(int index)
+{
+    if ((index < 0) || (index >= _count))
+        throw std::out_of_range("Invalid index.");
+
+    T element = entries[index];
+    // Shift begins at the index we pass to shift().
+    // We want to move every element *after*
+    // the parameter index (here) back, so we add 1.
+    shift(-1, index + 1);
+    _count--;
+    return element;
+}
+
+TEMP
+void Array<T>::remove(T element)
+{
+    int index = position(element);
+    if (index == -1)
+        return;
+
+    erase(index);
+}
+
+TEMP
+T Array<T>::pop()
 {
     _count--;
     return entries[(int) _count];
