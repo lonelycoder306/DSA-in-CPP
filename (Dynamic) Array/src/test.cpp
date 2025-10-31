@@ -11,7 +11,7 @@ int main()
     for (int i = 0; i < 10; i++)
         array1.add(i + 1);
     array1.insert(-1, 3);
-    for (const int i : array1)
+    for (const auto& i : array1)
         std::cout << i << '\n';
     array1.pop();
     

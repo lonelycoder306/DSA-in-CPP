@@ -231,6 +231,11 @@ void Array<T>::shift(int shift, int start)
     
     // To avoid data corruption, we make a
     // new internal array.
+    // Note: we don't use an Array<T> local
+    // variable since its destructor (called when
+    // it goes out of scope by the end of this function)
+    // will deallocate the memory we just "filled up".
+
     T* newEntries = new T[_capacity];
     for (int i = 0; i < start; i++)
         newEntries[i] = this->entries[i];
