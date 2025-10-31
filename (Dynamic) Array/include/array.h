@@ -31,12 +31,13 @@ class Array
         // Utility.
         void grow();
 
-        void add(T element);
+        void push(T element);
         int position(T element);
         void insert(T element, int index);
         T erase(int index);
         void remove(T element);
         T pop();
+        void popn(int n);
         size_t count();
         size_t capacity();
         T* front();
@@ -211,7 +212,7 @@ void Array<T>::grow()
 }
 
 TEMP
-void Array<T>::add(T element)
+void Array<T>::push(T element)
 {
     if (_capacity <= _count)
         grow();
@@ -320,6 +321,16 @@ T Array<T>::pop()
 {
     _count--;
     return entries[(int) _count];
+}
+
+TEMP
+void Array<T>::popn(int n)
+{
+    while (n > 0)
+    {
+        pop();
+        n--;
+    }
 }
 
 TEMP
