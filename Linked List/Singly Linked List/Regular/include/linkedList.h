@@ -309,6 +309,11 @@ TEMP
 void LinkedList<T>::merge(const LinkedList<T>& other)
 {
     int length = other.listLength;
+    // We can't simply connect the end node
+    // for this list to the head node of
+    // the other, since they would then have
+    // duplicate pointers, leading to double-freeing
+    // when both list objects' destructors are called.
     for (int i = 0; i < length; i++)
         this->append(other.at(i)->object);
 }
