@@ -1,5 +1,6 @@
 #pragma once
 #include "../../General/list.h"
+#include <stdexcept>
 
 #define TEMP template<typename T>
 
@@ -18,18 +19,22 @@ class LinkedList
 
         int length();
         ListNode<T>* front();
+        // Returns pointer to last node.
         ListNode<T>* back();
 
         void prepend(T object);
         void append(T object);
         void insert(T object, int position);
-        void remove(int position);
-        int position(T object, int start = 0);
-        bool has(T object);
-        ListNode<T>* at(int position);
-        ListNode<T>* get(T object);
+        T erase(int position);
+        int position(T object, int start = 0) const;
+        void remove(T object);
+        T pop();
+        void popn(int n);
+        bool has(T object) const;
+        ListNode<T>* at(int position) const;
+        ListNode<T>* get(T object) const;
         void sort(bool ascending = true);
-        void merge(LinkedList<T>& other);
+        void merge(const LinkedList<T>& other);
 
         friend LinkedList<T> copy(const LinkedList<T>& list);
 };
@@ -44,6 +49,7 @@ LinkedList<T>::LinkedList()
 TEMP
 LinkedList<T>::~LinkedList()
 {
+    listLength = 0;
     ListNode<T>* current = head;
     ListNode<T>* temp = nullptr;
     while (current != nullptr)
@@ -69,7 +75,7 @@ ListNode<T>* LinkedList<T>::front()
 TEMP
 ListNode<T>* LinkedList<T>::back()
 {
-    return this->at(length() - 1);
+    return this->at(listLength - 1);
 }
 
 TEMP
@@ -106,11 +112,15 @@ void LinkedList<T>::append(T object)
 TEMP
 void LinkedList<T>::insert(T object, int position)
 {
-    if ((position < 0) || (position >= listLength))
-        return; // Put error-handling here.
+    if ((position < 0) ||
+        ((position != 0) && (position >= listLength)))
+            return; // Put error-handling here.
 
-    // Not needed because of above condition.
-    // Remove?
+    // We will allow the user to use insert
+    // on position 0 for an empty list.
+    // No other position accepted if list is
+    // empty.
+
     if (head == nullptr) // Empty list.
     {
         prepend(object);
@@ -138,10 +148,10 @@ void LinkedList<T>::insert(T object, int position)
 }
 
 TEMP
-void LinkedList<T>::remove(int position)
+T LinkedList<T>::erase(int position)
 {
     if ((position < 0) || (position >= listLength))
-        return; // Put error-handling here.
+        throw std::out_of_range("Invalid position value.");
     
     // Pointer to element before the one we want.
     ListNode<T>* previous = nullptr;
@@ -157,17 +167,20 @@ void LinkedList<T>::remove(int position)
     if (previous == nullptr) // Removing the head.
     {
         ListNode<T>* temp = head;
+        T element = head->object;
         head = head->next;
         delete temp;
-        return;
+        return element;
     }
 
     previous->next = current->next;
+    T element = current->object;
     delete current;
+    return element;
 }
 
 TEMP
-int LinkedList<T>::position(T object, int start)
+int LinkedList<T>::position(T object, int start) const
 {
     if ((start < 0) || (start >= listLength))
         return -1; // Put error-handling here.
@@ -177,34 +190,52 @@ int LinkedList<T>::position(T object, int start)
         temp = temp->next;
 
     // Also handles head being a nullptr.
-    int position = start - 1;
+    int position = start;
     while (temp != nullptr)
     {
-        position++;
         if (temp->object == object)
             return position;
         temp = temp->next;
+        position++;
     }
     
     return -1;
 }
 
 TEMP
-bool LinkedList<T>::has(T object)
+void LinkedList<T>::remove(T object)
 {
-    ListNode<T>* temp = head;
-    while (temp != nullptr)
-    {
-        if (temp->object == object)
-            return true;
-        temp = temp->next;
-    }
-    
-    return false;
+    int pos = position(object);
+    if (pos != -1)
+        erase(pos);
 }
 
 TEMP
-ListNode<T>* LinkedList<T>::at(int position)
+T LinkedList<T>::pop()
+{
+    // erase() will automatically decrement
+    // listLength.
+    return erase(listLength - 1);
+}
+
+TEMP
+void LinkedList<T>::popn(int n)
+{
+    while (n > 0)
+    {
+        pop();
+        n--;
+    }
+}
+
+TEMP
+bool LinkedList<T>::has(T object) const
+{
+    return (position(object) != -1);
+}
+
+TEMP
+ListNode<T>* LinkedList<T>::at(int position) const
 {
     if ((position < 0) || (position >= listLength))
         return nullptr; // Put error-handling here.
@@ -217,17 +248,13 @@ ListNode<T>* LinkedList<T>::at(int position)
 }
 
 TEMP
-ListNode<T>* LinkedList<T>::get(T object)
+ListNode<T>* LinkedList<T>::get(T object) const
 {
     int pos = position(object);
     if (pos == -1)
         return nullptr;
     
-    ListNode<T>* temp = head;
-    for (int i = 0; i < pos; i++)
-        temp = temp->next;
-    
-    return temp;
+    return this->at(pos);
 }
 
 TEMP
@@ -279,16 +306,17 @@ void LinkedList<T>::sort(bool ascending)
 }
 
 TEMP
-void LinkedList<T>::merge(LinkedList<T>& other)
+void LinkedList<T>::merge(const LinkedList<T>& other)
 {
-    back()->next = other.head;
-    this->listLength += other.listLength;
+    int length = other.listLength;
+    for (int i = 0; i < length; i++)
+        this->append(other.at(i)->object);
 }
 
 TEMP
 LinkedList<T> copy(const LinkedList<T>& list)
 {
-    int length = list.length();
+    int length = list.listLength;
     LinkedList<T> newList;
 
     for (int i = 0; i < length; i++)
