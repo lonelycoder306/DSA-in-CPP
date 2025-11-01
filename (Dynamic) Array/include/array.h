@@ -101,7 +101,7 @@ Array<T>::Array(int size)
 {
     if (size < 0)
         throw std::out_of_range("Negative index cannot be used.");
-    entries = static_cast<T*>(::operator new(sizeof(T) * size));
+    entries = new T[size];
     _count = (size_t) 0; // No elements used at time of construction.
     _capacity = (size_t) size;
 }
@@ -202,7 +202,7 @@ TEMP
 void Array<T>::grow()
 {
     _capacity = (_capacity == 0 ? 8 : _capacity * 2);
-    T* newEntries = static_cast<T*>(::operator new(sizeof(T) * _capacity));
+    T* newEntries = new T[_capacity];
     for (int i = 0; i < (int) _count; i++)
         newEntries[i] = std::move(entries[i]);
     delete[] entries;
@@ -231,6 +231,7 @@ int Array<T>::position(T element)
     return -1;
 }
 
+#include <iostream> // FOR DEBUGGING
 // When using this function, any unshifted
 // buffer area in the array must be replaced/
 // initialized immediately to maintain
@@ -247,7 +248,7 @@ void Array<T>::shift(int shift, int start)
     // that internally.
 
     // Can't be too negative, though.
-    if (shift < (-1 * _count))
+    if (shift < (-1 * (int) _count))
         return; // Throw error?
 
     if ((start < 0) || (start >= _count))
