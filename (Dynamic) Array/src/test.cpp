@@ -9,7 +9,7 @@ int main()
 
     Array<int> array1(10);
     for (int i = 0; i < 10; i++)
-        array1.add(i + 1);
+        array1.push(i + 1);
     array1.insert(-1, 3);
     std::cout << "Inserted: " << array1[3] << '\n';
     array1.remove(-1);
