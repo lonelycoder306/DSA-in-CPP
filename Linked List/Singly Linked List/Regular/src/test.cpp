@@ -5,6 +5,7 @@ int main()
 {
     LinkedList<int> list;
 
+    list.insert(1, 2); // Inserting at position 2 in empty list; doesn't do anything.
     list.insert(1, 0); // Inserting at position 0 in empty list.
     std::cout << list.at(0)->object << '\n';
     std::cout << "List has 1: " << (list.has(1) ? "true" : "false") << '\n';
@@ -44,6 +45,17 @@ int main()
     list.merge(list2);
     std::cout << "After merge:\n";
     std::cout << "Size: " << list.length() << '\n';
+
+    LinkedList<int> list3;
+    list3.sortAdd(4);
+    list3.sortAdd(2);
+    list3.sortAdd(1);
+    std::cout << "Position: " << list3.sortPosition(3) << '\n';
+    for (int i = 0; i < list3.length(); i++)
+    {
+        ListNode<int>* element = list3.at(i);
+        std::cout << element->object << '\n';
+    }
 
     return 0;
 }

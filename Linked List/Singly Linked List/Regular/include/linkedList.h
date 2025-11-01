@@ -4,12 +4,20 @@
 
 #define TEMP template<typename T>
 
+enum SortCase
+{
+    SORTED,
+    UNSORTED,
+    INVALID
+};
+
 TEMP
 class LinkedList
 {
     private:
         ListNode<T>* head;
         int listLength;
+        SortCase isSorted;
 
         void swap(ListNode<T>* first, ListNode<T>* second);
     
@@ -22,20 +30,47 @@ class LinkedList
         // Returns pointer to last node.
         ListNode<T>* back();
 
+        // Add new node.
+
         void prepend(T object);
         void append(T object);
         void insert(T object, int position);
-        T erase(int position);
+
+        // Find a node.
+
         int position(T object, int start = 0) const;
+
+        // Remove node(s).
+
+        T erase(int position);
         void remove(T object);
         T pop();
         void popn(int n);
+
+        // Check for and retrieve nodes.
+
         bool has(T object) const;
         ListNode<T>* at(int position) const;
         ListNode<T>* get(T object) const;
+
+        // Manage list.
+
         void sort(bool ascending = true);
         void merge(const LinkedList<T>& other);
 
+        // Manage sorted list.
+        // All methods (except sorted()) will
+        // assume the list object is already
+        // sorted. They will not sort it if it isn't.
+
+        // Check if it's sorted first.
+        bool sorted(); // Will add ascending flag parameter later.
+        void sortAdd(T object);
+        int sortPosition(T object, int start = 0) const;
+        bool sortHas(T object) const;
+        void sortRemove(T object);
+
+        // Make a copy of the list.
         friend LinkedList<T> copy(const LinkedList<T>& list);
 };
 
@@ -44,6 +79,7 @@ LinkedList<T>::LinkedList()
 {
     head = nullptr;
     listLength = 0;
+    isSorted = INVALID;
 }
 
 TEMP
@@ -148,6 +184,29 @@ void LinkedList<T>::insert(T object, int position)
 }
 
 TEMP
+int LinkedList<T>::position(T object, int start) const
+{
+    if ((start < 0) || (start >= listLength))
+        return -1; // Put error-handling here.
+
+    ListNode<T>* temp = head;
+    for (int i = 0; i < start; i++)
+        temp = temp->next;
+
+    // Also handles head being a nullptr.
+    int position = start;
+    while (temp != nullptr)
+    {
+        if (temp->object == object)
+            return position;
+        temp = temp->next;
+        position++;
+    }
+    
+    return -1;
+}
+
+TEMP
 T LinkedList<T>::erase(int position)
 {
     if ((position < 0) || (position >= listLength))
@@ -177,29 +236,6 @@ T LinkedList<T>::erase(int position)
     T element = current->object;
     delete current;
     return element;
-}
-
-TEMP
-int LinkedList<T>::position(T object, int start) const
-{
-    if ((start < 0) || (start >= listLength))
-        return -1; // Put error-handling here.
-
-    ListNode<T>* temp = head;
-    for (int i = 0; i < start; i++)
-        temp = temp->next;
-
-    // Also handles head being a nullptr.
-    int position = start;
-    while (temp != nullptr)
-    {
-        if (temp->object == object)
-            return position;
-        temp = temp->next;
-        position++;
-    }
-    
-    return -1;
 }
 
 TEMP
@@ -269,8 +305,16 @@ TEMP
 // Using bubble sort.
 void LinkedList<T>::sort(bool ascending)
 {
+    // We assume the list is currently unsorted
+    // when this method is called, so we don't
+    // check for the value of isSorted.
+
     if ((head == nullptr) || (head->next == nullptr))
-        return; // Empty list or only one element; nothing to sort.
+    {
+        // Empty list or only one element; nothing to sort.
+        isSorted = SORTED;
+        return;
+    }
     
     bool ordered = false;
 
@@ -303,6 +347,8 @@ void LinkedList<T>::sort(bool ascending)
             second = second->next;
         }
     }
+
+    isSorted = SORTED;
 }
 
 TEMP
@@ -316,6 +362,96 @@ void LinkedList<T>::merge(const LinkedList<T>& other)
     // when both list objects' destructors are called.
     for (int i = 0; i < length; i++)
         this->append(other.at(i)->object);
+    // Cannot know if the merged list is still sorted.
+    isSorted = INVALID;
+}
+
+TEMP
+bool LinkedList<T>::sorted()
+{
+    // If previous state is known, return it.
+    if (isSorted == SORTED || isSorted == UNSORTED)
+        return (isSorted == SORTED); // True if sorted, false otherwise.
+    
+    if ((head == nullptr) || (head->next == nullptr))
+    {
+        isSorted = SORTED;
+        return true;
+    }
+    
+    ListNode<T>* first = head;
+    ListNode<T>* second = head->next;
+
+    for (int i = 0; i < listLength - 1; i++)
+    {
+        if (first->object > second->object)
+        {
+            isSorted = UNSORTED;
+            return false;
+        }
+
+        first = second;
+        second = second->next;
+    }
+
+    isSorted = SORTED;
+    return true;
+}
+
+TEMP
+void LinkedList<T>::sortAdd(T object)
+{
+    ListNode<T>* temp = head;
+    int position = 0;
+    while (temp != nullptr)
+    {
+        if (temp->object > object)
+            break;
+        temp = temp->next;
+        position++;
+    }
+    if (position != listLength)
+        insert(object, position);
+    else
+        append(object);
+}
+
+TEMP
+int LinkedList<T>::sortPosition(T object, int start) const
+{
+    if ((start < 0) || (start >= listLength))
+        return -1; // Throw error?
+    
+    ListNode<T>* temp = head;
+    for (int i = 0; i < start; i++)
+        temp = temp->next;
+
+    int position = start;
+    while (temp != nullptr)
+    {
+        if (temp->object == object)
+            return position;
+        if (temp->object > object) // It's not there.
+            break;
+        temp = temp->next;
+        position++;
+    }
+
+    return -1;
+}
+
+TEMP
+bool LinkedList<T>::sortHas(T object) const
+{
+    return (sortPosition(object) != -1);
+}
+
+TEMP
+void LinkedList<T>::sortRemove(T object)
+{
+    int pos = sortPosition(object);
+    if (pos != -1)
+        erase(pos);
 }
 
 TEMP
@@ -327,6 +463,8 @@ LinkedList<T> copy(const LinkedList<T>& list)
     for (int i = 0; i < length; i++)
         // Uses copy constructor(?) for T object.
         newList.append(list.at(i)->object);
+    
+    newList.isSorted = list.isSorted;
     
     return newList;
 }
