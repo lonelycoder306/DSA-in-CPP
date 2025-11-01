@@ -4,6 +4,13 @@
 int main()
 {
     LinkedList<int> list;
+
+    list.insert(1, 0); // Inserting at position 0 in empty list.
+    std::cout << list.at(0)->object << '\n';
+    std::cout << "List has 1: " << (list.has(1) ? "true" : "false") << '\n';
+    std::cout << "List has 2: " << (list.has(2) ? "true" : "false") << '\n';
+    list.pop();
+
     for (int i = 0; i < 10; i++)
         list.append(i+1);
 
@@ -14,7 +21,7 @@ int main()
     list.insert(12, 0);
     list.insert(12, 3);
     list.append(12);
-    list.remove(list.position(6));
+    list.remove(6);
     list.prepend(15);
     std::cout << "After insertion and deletion:\n";
     for (int i = 0; i < list.length(); i++)
@@ -29,6 +36,14 @@ int main()
     }
 
     std::cout << "Size: " << list.length() << '\n';
-    std::cout << "Position of 2: " << list.position(2) + 1 << '\n';
+    std::cout << "Position of 2: " << list.position(2, 1) + 1 << '\n';
+
+    LinkedList<int> list2;
+    list2.append(100);
+    list2.append(200);
+    list.merge(list2);
+    std::cout << "After merge:\n";
+    std::cout << "Size: " << list.length() << '\n';
+
     return 0;
 }
