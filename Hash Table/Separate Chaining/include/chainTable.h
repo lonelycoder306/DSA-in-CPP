@@ -159,7 +159,6 @@ void chainTable<Key, Value>::add(Key key, Value value)
     uint32_t hash = hashKey(key);
     int index = (int) (hash % entries.capacity());
     maxIndex = (index > maxIndex) ? index : maxIndex;
-    std::cout << "At index: " << index << '\n';
 
     EKVList& list = entries.slot(index);
     if (list.front() == nullptr) // Empty list.
