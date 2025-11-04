@@ -6,7 +6,7 @@
 typedef uint32_t Hash;
 
 template<typename Key>
-uint32_t hashKey(Key key, size_t size = 0);
+Hash hashKey(Key key, size_t size = 0);
 Hash hashDouble(double key);
 Hash hashChar(char key);
 Hash hashString(std::string_view string);
@@ -17,7 +17,7 @@ Hash hashCStr(const char* string, size_t length = -1);
 // with template implementations.
 
 template<typename Key>
-uint32_t hashKey(Key key, size_t size)
+Hash hashKey(Key key, size_t size)
 {
     if constexpr (std::is_same_v<Key, int>)
         return hashDouble((double) key);
