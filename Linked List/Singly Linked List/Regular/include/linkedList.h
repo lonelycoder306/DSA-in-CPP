@@ -20,9 +20,14 @@ class LinkedList
         SortCase isSorted;
 
         void swap(ListNode<T>* first, ListNode<T>* second);
+        void clear();
     
     public:
         LinkedList();
+        LinkedList(const LinkedList<T>& other);
+        LinkedList& operator=(const LinkedList<T>& other);
+        LinkedList(LinkedList<T>&& other);
+        LinkedList& operator=(LinkedList<T>&& other);
         ~LinkedList();
 
         int length();
@@ -83,9 +88,8 @@ LinkedList<T>::LinkedList()
 }
 
 TEMP
-LinkedList<T>::~LinkedList()
+void LinkedList<T>::clear()
 {
-    listLength = 0;
     ListNode<T>* current = head;
     ListNode<T>* temp = nullptr;
     while (current != nullptr)
@@ -94,6 +98,71 @@ LinkedList<T>::~LinkedList()
         current = current->next;
         delete temp;
     }
+
+    listLength = 0;
+    isSorted = INVALID;
+}
+
+TEMP
+LinkedList<T>::LinkedList(const LinkedList<T>& other)
+{
+    int length = other.listLength;
+    for (ListNode<T>* node = other.head; node != nullptr; node = node->next)
+        this->append(node->object);
+    
+    // this->listLength = other.listLength;
+    this->isSorted = other.isSorted;
+}
+
+TEMP
+LinkedList<T>& LinkedList<T>::operator=(const LinkedList<T>& other)
+{
+    if (this != &other)
+    {
+        this->clear();
+        
+        for (ListNode<T>* node = other.head; node != nullptr; node = node->next)
+            this->append(node->object);
+
+        // this->listLength = other.listLength;
+        this->isSorted = other.isSorted;
+    }
+
+    return *this;
+}
+
+TEMP
+LinkedList<T>::LinkedList(LinkedList<T>&& other)
+{
+    this->head = other.head;
+    this->listLength = other.listLength;
+    this->isSorted = other.isSorted;
+
+    other.head = nullptr;
+    other.listLength = 0;
+    other.isSorted = INVALID;
+}
+
+TEMP
+LinkedList<T>& LinkedList<T>::operator=(LinkedList<T>&& other)
+{
+    this->clear();
+    
+    this->head = other.head;
+    this->listLength = other.listLength;
+    this->isSorted = other.isSorted;
+
+    other.head = nullptr;
+    other.listLength = 0;
+    other.isSorted = INVALID;
+
+    return *this;
+}
+
+TEMP
+LinkedList<T>::~LinkedList()
+{
+    this->clear();
 }
 
 TEMP
@@ -354,14 +423,15 @@ void LinkedList<T>::sort(bool ascending)
 TEMP
 void LinkedList<T>::merge(const LinkedList<T>& other)
 {
-    int length = other.listLength;
     // We can't simply connect the end node
     // for this list to the head node of
     // the other, since they would then have
     // duplicate pointers, leading to double-freeing
     // when both list objects' destructors are called.
-    for (int i = 0; i < length; i++)
-        this->append(other.at(i)->object);
+
+    for (ListNode<T>* node = other.head; node != nullptr; node = node->next)
+        this->append(node->object);
+
     // Cannot know if the merged list is still sorted.
     isSorted = INVALID;
 }
@@ -457,14 +527,13 @@ void LinkedList<T>::sortRemove(T object)
 TEMP
 LinkedList<T> copy(const LinkedList<T>& list)
 {
-    int length = list.listLength;
     LinkedList<T> newList;
 
-    for (int i = 0; i < length; i++)
+    for (ListNode<T>* node = list.head; node != nullptr; node = node->next)
         // Uses copy constructor(?) for T object.
-        newList.append(list.at(i)->object);
+        newList.append(node->object);
     
     newList.isSorted = list.isSorted;
-    
+
     return newList;
 }
