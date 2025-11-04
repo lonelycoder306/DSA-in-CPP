@@ -20,6 +20,7 @@ int main()
     Array<int> array2 = array1;
     std::cout << "Array 1 Size: " << array1.count() << '\n';
     std::cout << "Array 1 Capacity: " << array1.capacity() << '\n';
+    setCount(array2, 12);
     std::cout << "Array 2 Size: " << array2.count() << '\n';
     std::cout << "Array 2 Capacity: " << array2.capacity() << '\n';
     return 0;

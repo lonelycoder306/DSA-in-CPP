@@ -30,6 +30,12 @@ class Array
 
         // Utility.
         void grow();
+        // Making it inline was the only way to prevent
+        // odd compiler/linker errors.
+        friend inline void setCount(Array<T>& list, size_t count)
+        {
+            list._count = count;
+        }
 
         void push(T element);
         int position(T element);
@@ -111,7 +117,7 @@ Array<T>::Array(const Array<T>& other)
 {
     this->entries = new T[other._capacity];
 
-    for (size_t i = 0; i < this->_count; i++)
+    for (size_t i = 0; i < other._capacity; i++)
         this->entries[i] = other.entries[i];
 
     this->_count = other._count;
@@ -138,7 +144,7 @@ Array<T>& Array<T>::operator=(const Array<T>& other)
         delete[] this->entries;
         this->entries = new T[other._capacity];
 
-        for (size_t i = 0; i < this->_count; i++)
+        for (size_t i = 0; i < other._capacity; i++)
             this->entries[i] = other.entries[i];
 
         this->_count = other._count;
@@ -231,7 +237,6 @@ int Array<T>::position(T element)
     return -1;
 }
 
-#include <iostream> // FOR DEBUGGING
 // When using this function, any unshifted
 // buffer area in the array must be replaced/
 // initialized immediately to maintain
