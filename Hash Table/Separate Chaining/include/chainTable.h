@@ -165,7 +165,6 @@ void chainTable<Key, Value>::add(Key key, Value value)
         bucketCount++; // We're filling a new "bucket".
 
     EKV entry(key, value, hash);
-    // entry.isEmpty = false;
     
     list.append(entry);
     entryCount++;
@@ -202,7 +201,7 @@ void chainTable<Key, Value>::remove(Key key)
     int index = (int) (hash % entries.capacity());
 
     EKVList& list = entries.slot(index);
-    EKV temp = Entry(key, hash);
+    EKV temp = EKV(key, hash);
     if (!list.has(temp))
         return;
     

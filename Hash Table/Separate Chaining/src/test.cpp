@@ -22,5 +22,12 @@ int main()
     std::cout << "Size: " << table.entrySize() << '\n';
     for (int i = 1; i < 5; i++)
         std::cout << *table.get(names[i - 1]) << '\n';
+
+    table.add("Mary", 12);
+    std::cout << *table.get("Mary") << '\n';
+    table.remove("Mary");
+    if (table.get("Mary") == nullptr)
+        std::cout << "Removed key successfully.\n";
+
     return 0;
 }
