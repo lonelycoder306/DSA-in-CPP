@@ -49,6 +49,7 @@ class Array
         T* front();
         T* back();
         T& slot(int index); // index < capacity.
+        void slotInsert(T element, int index); // index < capacity.
 
         class iterator
         {
@@ -369,6 +370,20 @@ T& Array<T>::slot(int index)
     if ((index < 0) || ((size_t) index >= _capacity))
         throw std::out_of_range("Invalid index.");
     return entries[index];
+}
+
+TEMP
+void Array<T>::slotInsert(T element, int index)
+{
+    if ((index < 0) || ((size_t) index >= _capacity))
+        throw std::out_of_range("Invalid index");
+        
+    if (_capacity <= _count)
+        grow();
+
+    shift(1, index);
+    entries[index] = element;
+    _count++;
 }
 
 // Iterator implementation.
