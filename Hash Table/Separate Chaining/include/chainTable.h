@@ -221,10 +221,9 @@ void chainTable<Key, Value>::merge(const chainTable<Key, Value>& other)
         if (list.front() == nullptr)
             continue;
 
-        int length = list.length();
-        for (int j = 0; j < length; j++)
+        for (auto* ptr = list.front(); ptr != nullptr; ptr = ptr->next)
         {
-            EKV entry = list.at(j)->object;
+            EKV entry = ptr->object;
             add(entry.key, entry.value);
         }
     }
