@@ -25,8 +25,8 @@ int main()
     list.remove(6);
     list.prepend(15);
     std::cout << "After insertion and deletion:\n";
-    for (const auto& value : list)
-        std::cout << value << '\n';
+    for (const auto& element : list)
+        std::cout << element << '\n';
 
     std::cout << "After sorting:\n";
     list.sort();
