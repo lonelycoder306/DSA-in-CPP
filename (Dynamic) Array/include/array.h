@@ -62,6 +62,7 @@ class Array
                 iterator& operator=(const iterator& other);
 
                 T& operator*() const;
+                T* operator->() const;
                 iterator& operator++();
                 iterator operator++(int);
                 iterator& operator--();
@@ -81,6 +82,7 @@ class Array
                 const_iterator& operator=(const const_iterator& other);
 
                 const T& operator*() const;
+                const T* operator->() const;
                 const_iterator& operator++();
                 const_iterator operator++(int);
                 const_iterator& operator--();
@@ -412,6 +414,12 @@ T& arrIter::operator*() const
 }
 
 TEMP
+T* arrIter::operator->() const
+{
+    return ptr;
+}
+
+TEMP
 typename arrIter& arrIter::operator++()
 {
     ++ptr;
@@ -488,6 +496,12 @@ TEMP
 const T& constIter::operator*() const
 {
     return *ptr;
+}
+
+TEMP
+const T* constIter::operator->() const
+{
+    return ptr;
 }
 
 TEMP
