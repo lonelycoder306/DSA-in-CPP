@@ -16,8 +16,8 @@ int main()
         list.append(i+1);
 
     std::cout << "Before insertion:\n";
-    for (int i = 0; i < 10; i++)
-        std::cout << list.get(i+1)->object << '\n';
+    for (const auto& element : list)
+        std::cout << element << '\n';
 
     list.insert(12, 0);
     list.insert(12, 3);
@@ -25,16 +25,14 @@ int main()
     list.remove(6);
     list.prepend(15);
     std::cout << "After insertion and deletion:\n";
-    for (int i = 0; i < list.length(); i++)
-        std::cout << list.at(i)->object << '\n';
+    for (const auto& value : list)
+        std::cout << value << '\n';
 
     std::cout << "After sorting:\n";
     list.sort();
-    for (int i = 0; i < list.length(); i++)
-    {
-        ListNode<int>* element = list.at(i);
-        std::cout << element->object << '\n';
-    }
+
+    for (const auto& element : list)
+        std::cout << element << '\n';
 
     std::cout << "Size: " << list.length() << '\n';
     std::cout << "Position of 2: " << list.position(2, 1) + 1 << '\n';
@@ -51,11 +49,9 @@ int main()
     list3.sortAdd(2);
     list3.sortAdd(1);
     std::cout << "Position: " << list3.sortPosition(3) << '\n';
-    for (int i = 0; i < list3.length(); i++)
-    {
-        ListNode<int>* element = list3.at(i);
-        std::cout << element->object << '\n';
-    }
+
+    for (const auto& element : list3)
+        std::cout << element << '\n';
 
     return 0;
 }

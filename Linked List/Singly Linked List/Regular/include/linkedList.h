@@ -77,6 +77,45 @@ class LinkedList
 
         // Make a copy of the list.
         friend LinkedList<T> copy(const LinkedList<T>& list);
+
+        class iterator
+        {
+            private:
+                ListNode<T>* ptr;
+            
+            public:
+                iterator(ListNode<T>* ptr);
+                iterator(const iterator& other);
+                iterator& operator=(const iterator& other);
+
+                T& operator*() const;
+                iterator& operator++();
+                iterator operator++(int);
+                bool operator==(const iterator& other);
+                bool operator!=(const iterator& other);
+        };
+
+        class const_iterator
+        {
+            private:
+                const ListNode<T>* ptr;
+            
+            public:
+                const_iterator(const ListNode<T>* ptr);
+                const_iterator(const const_iterator& other);
+                const_iterator& operator=(const const_iterator& other);
+
+                const T& operator*() const;
+                const_iterator& operator++();
+                const_iterator operator++(int);
+                bool operator==(const const_iterator& other) const;
+                bool operator!=(const const_iterator& other) const;
+        };
+
+        iterator begin();
+        iterator end();
+        const_iterator cbegin();
+        const_iterator cend();
 };
 
 TEMP
@@ -536,4 +575,131 @@ LinkedList<T> copy(const LinkedList<T>& list)
     newList.isSorted = list.isSorted;
 
     return newList;
+}
+
+// Iterator implementation.
+
+#define LLIter LinkedList<T>::iterator
+
+TEMP
+LLIter::iterator(ListNode<T>* ptr) :
+    ptr(ptr) {}
+
+TEMP
+LLIter::iterator(const LLIter& other) :
+    ptr(other.ptr) {}
+
+TEMP
+typename LLIter& LLIter::operator=(const LLIter& other)
+{
+    this->ptr = other.ptr;
+    return *this;
+}
+
+TEMP
+T& LLIter::operator*() const
+{
+    return ptr->object;
+}
+
+TEMP
+typename LLIter& LLIter::operator++()
+{
+    ptr = ptr->next;
+    return *this;
+}
+
+TEMP
+typename LLIter LLIter::operator++(int n)
+{
+    LLIter temp = *this;
+    ptr = ptr->next;
+    return temp;
+}
+
+TEMP
+bool LLIter::operator==(const LLIter& other)
+{
+    return (this->ptr == other.ptr);
+}
+
+TEMP
+bool LLIter::operator!=(const LLIter& other)
+{
+    return (this->ptr != other.ptr);
+}
+
+TEMP
+typename LLIter LinkedList<T>::begin()
+{
+    return iterator(front());
+}
+
+TEMP
+typename LLIter LinkedList<T>::end()
+{
+    return iterator(back());
+}
+
+// Const iterator implementation.
+
+#define constIter LinkedList<T>::const_iterator
+
+TEMP
+constIter::const_iterator(const ListNode<T>* ptr) :
+    ptr(ptr) {}
+
+TEMP
+constIter::const_iterator(const const_iterator& other) :
+    ptr(other.ptr) {}
+
+TEMP
+typename constIter& constIter::operator=(const constIter& other)
+{
+    this->ptr = other.ptr;
+}
+
+TEMP
+const T& constIter::operator*() const
+{
+    return ptr->object;
+}
+
+TEMP
+typename constIter& constIter::operator++()
+{
+    ptr = ptr->next;
+    return *this;
+}
+
+TEMP
+typename constIter constIter::operator++(int n)
+{
+    constIter temp = *this;
+    ptr = ptr->next;
+    return temp;
+}
+
+TEMP
+bool constIter::operator==(const constIter& other) const
+{
+    return (this->ptr == other.ptr);
+}
+
+TEMP
+bool constIter::operator!=(const constIter& other) const
+{
+    return (this->ptr != other.ptr);
+}
+
+TEMP
+typename constIter LinkedList<T>::cbegin()
+{
+    return const_iterator(front());
+}
+
+TEMP
+typename constIter LinkedList<T>::cend()
+{
+    return const_iterator(back());
 }
