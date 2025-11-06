@@ -132,7 +132,8 @@ EKV* chainTable<Key, Value>::getEntry(Key key)
         return nullptr;
     
     uint32_t hash = hashKey(key);
-    int index = (int) (hash % entries.capacity());
+    uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
+    int index = (int) (hash & bitmask);
     EKVList& list = entries.slot(index);
     
     EKV temp(key, hash); // temp.value uninitialized.
@@ -157,7 +158,8 @@ void chainTable<Key, Value>::add(Key key, Value value)
     resize(); // Grow if needed.
 
     uint32_t hash = hashKey(key);
-    int index = (int) (hash % entries.capacity());
+    uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
+    int index = (int) (hash & bitmask);
     maxIndex = (index > maxIndex) ? index : maxIndex;
 
     EKVList& list = entries.slot(index);
@@ -198,7 +200,8 @@ void chainTable<Key, Value>::remove(Key key)
         return;
     
     uint32_t hash = hashKey(key);
-    int index = (int) (hash % entries.capacity());
+    uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
+    int index = (int) (hash & bitmask);
 
     EKVList& list = entries.slot(index);
     EKV temp = EKV(key, hash);

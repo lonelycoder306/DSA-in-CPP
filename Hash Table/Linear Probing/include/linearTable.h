@@ -94,7 +94,8 @@ EKV* linearTable<Key, Value>::getEntry(Key key)
         return nullptr;
     
     uint32_t hash = hashKey(key);
-    int index = (int) (hash % entries.capacity());
+    uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
+    int index = (int) (hash & bitmask);
 
     if (entries.slot(index).isEmpty) // Deleted entry.
         return nullptr;
@@ -106,7 +107,7 @@ EKV* linearTable<Key, Value>::getEntry(Key key)
     {
         if (entries.slot(index).key == key)
             return &(entries.slot(index));
-        index = (index + 1) % entries.capacity();
+        index = (index + 1) & bitmask;
     }
 
     if (entries.slot(index).isEmpty) // Didn't find it.
@@ -128,7 +129,8 @@ void linearTable<Key, Value>::add(Key key, Value value)
     resize(); // Grow size if needed.
 
     uint32_t hash = hashKey(key);
-    int index = (int) (hash % entries.capacity());
+    uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
+    int index = (int) (hash & bitmask);
     maxIndex = (index > maxIndex) ? index : maxIndex;
 
     EKV entry(key, value, hash);
@@ -141,7 +143,7 @@ void linearTable<Key, Value>::add(Key key, Value value)
     }
 
     while (!entries.slot(index).isEmpty)
-        index = (index + 1) % entries.capacity();
+        index = (index + 1) & bitmask;
     
     entries.slot(index) = entry;
     // entries.slotInsert(entry, index);
@@ -171,7 +173,8 @@ KVTEMP
 void linearTable<Key, Value>::remove(Key key)
 {
     uint32_t hash = hashKey(key);
-    int index = (int) (hash % entries.capacity());
+    uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
+    int index = (int) (hash & bitmask);
 
     if (entries.slot(index).key == key)
     {
@@ -189,7 +192,7 @@ void linearTable<Key, Value>::remove(Key key)
             count--;
             break;
         }
-        index = (index + 1) % entries.capacity();
+        index = (index + 1) & bitmask;
     }
 
     // By this point:
