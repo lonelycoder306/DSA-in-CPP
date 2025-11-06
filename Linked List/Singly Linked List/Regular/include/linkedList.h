@@ -219,7 +219,10 @@ ListNode<T>* LinkedList<T>::front()
 TEMP
 ListNode<T>* LinkedList<T>::back()
 {
-    return this->at(listLength - 1);
+    // Temporarily.
+    // We can mimic std::list and make
+    // the last node a dummy sentinel node.
+    return nullptr;
 }
 
 TEMP
