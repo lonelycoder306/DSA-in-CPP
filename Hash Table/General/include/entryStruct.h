@@ -25,15 +25,15 @@ Entry<Key, Value>::Entry() :
 
 KVTEMP
 Entry<Key, Value>::Entry(Key key, Value value) :
-    key(key), value(value) {}
+    key(key), value(value), isEmpty(false) {}
 
 KVTEMP
 Entry<Key, Value>::Entry(Key key, uint32_t hash) :
-    key(key), hash(hash) {}
+    key(key), hash(hash), isEmpty(false) {}
 
 KVTEMP
 Entry<Key, Value>::Entry(Key key, Value value, uint32_t hash) :
-    key(key), value(value), hash(hash) {}
+    key(key), value(value), hash(hash), isEmpty(false) {}
 
 KVTEMP
 bool Entry<Key, Value>::operator==(const Entry<Key, Value>& other)
