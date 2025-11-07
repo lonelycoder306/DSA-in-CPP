@@ -31,6 +31,8 @@ class chainTable
         int getIndex(uint32_t hash);
         void reorder();
         void resize();
+        // Adds a key with no value.
+        EKV& emptyAdd(Key key);
         EKV* getEntry(Key key);
     
     public:
@@ -38,6 +40,7 @@ class chainTable
         chainTable(const chainTable<Key, Value>& other);
         ~chainTable() = default;
         chainTable<Key, Value>& operator=(const chainTable<Key, Value>& other);
+        Value& operator[](Key key);
 
         void add(Key key, Value value);
         Value* get(Key key);
@@ -74,6 +77,41 @@ chainTable<Key, Value>& chainTable<Key, Value>
         entries.push(copy(other.entries[i]));
     this->bucketCount = other.bucketCount;
     this->entryCount = other.entryCount;
+}
+
+KVTEMP
+EKV& chainTable<Key, Value>::emptyAdd(Key key)
+{
+    // This method is only called internally,
+    // so we can skip checks for the key existing
+    // while being careful to use the method properly.
+    
+    resize(); // Grow if needed.
+
+    uint32_t hash = hashKey(key);
+    uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
+    int index = (int) (hash & bitmask);
+    maxIndex = (index > maxIndex) ? index : maxIndex;
+
+    EKVList& list = entries.slot(index);
+    if (list.front() == nullptr) // Empty list.
+        bucketCount++; // We're filling a new "bucket".
+
+    EKV entry = EKV(key, hash);
+    
+    list.append(entry);
+    entryCount++;
+    return list.at(list.length() - 1)->object;
+}
+
+KVTEMP
+Value& chainTable<Key, Value>::operator[](Key key)
+{
+    EKV* entry = getEntry(key);
+    if (entry == nullptr)
+        return emptyAdd(key).value;
+
+    return entry->value;
 }
 
 // KVTEMP
