@@ -475,85 +475,85 @@ typename arrIter Array<T>::end()
 
 // Const iterator implementation.
 
-#define constIter Array<T>::const_iterator
+#define constArrIter Array<T>::const_iterator
 
 TEMP
-constIter::const_iterator(const T* ptr) :
+constArrIter::const_iterator(const T* ptr) :
     ptr(ptr) {}
 
 TEMP
-constIter::const_iterator(const const_iterator& other) :
+constArrIter::const_iterator(const const_iterator& other) :
     ptr(other.ptr) {}
 
 TEMP
-typename constIter& constIter::operator=(const const_iterator& other)
+typename constArrIter& constArrIter::operator=(const const_iterator& other)
 {
     this->ptr = other.ptr;
     return *this;
 }
 
 TEMP
-const T& constIter::operator*() const
+const T& constArrIter::operator*() const
 {
     return *ptr;
 }
 
 TEMP
-const T* constIter::operator->() const
+const T* constArrIter::operator->() const
 {
     return ptr;
 }
 
 TEMP
-typename constIter& constIter::operator++()
+typename constArrIter& constArrIter::operator++()
 {
     ++ptr;
     return *this;
 }
 
 TEMP
-typename constIter constIter::operator++(int n)
+typename constArrIter constArrIter::operator++(int n)
 {
-    constIter temp = *this;
+    constArrIter temp = *this;
     ptr++;
     return temp;
 }
 
 TEMP
-typename constIter& constIter::operator--()
+typename constArrIter& constArrIter::operator--()
 {
     --ptr;
     return *this;
 }
 
 TEMP
-typename constIter constIter::operator--(int n)
+typename constArrIter constArrIter::operator--(int n)
 {
-    constIter temp = *this;
+    constArrIter temp = *this;
     ptr--;
     return *this;
 }
 
 TEMP
-bool constIter::operator==(const const_iterator& other) const
+bool constArrIter::operator==(const const_iterator& other) const
 {
     return (this->ptr == other.ptr);
 }
 
 TEMP
-bool constIter::operator!=(const const_iterator& other) const
+bool constArrIter::operator!=(const const_iterator& other) const
 {
     return (this->ptr != other.ptr);
 }
 
 TEMP
-typename constIter Array<T>::cbegin()
+typename constArrIter Array<T>::cbegin()
 {
     return const_iterator(front());
 }
 
 TEMP
-typename constIter Array<T>::cend()
+typename constArrIter Array<T>::cend()
 {
     return const_iterator(end());
 }
