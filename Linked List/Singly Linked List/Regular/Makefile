@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Wno-unused-parameter -Werror
+CXXFLAGS = -O2 -Wall -Wextra -Wno-unused-parameter -Werror
 SRC_DIR = src
 TEST = test.cpp
 NAME = list.exe

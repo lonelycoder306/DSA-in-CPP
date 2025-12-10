@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Werror
+CXXFLAGS = -O2 -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Werror
 SRC_DIR = src
 TEST = test.cpp
 NAME = array.exe
