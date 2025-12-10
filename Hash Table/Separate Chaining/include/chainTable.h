@@ -5,6 +5,8 @@
 #include "../../../Linked List/Singly Linked List/Regular/include/linkedList.h"
 #include <cstdint>
 
+#include <iostream> // FOR DEBUGGING.
+
 #define KVTEMP template<typename Key, typename Value>
 #define EKV Entry<Key, Value>
 #define EKVList LinkedList<EKV>
@@ -28,7 +30,6 @@ class chainTable
 
         chainTable(int size);
 
-        int getIndex(uint32_t hash);
         void reorder();
         void resize();
         // Adds a key with no value.
@@ -50,12 +51,117 @@ class chainTable
 
         int bucketSize();
         int entrySize();
+
+        struct Pair
+        {
+            Key first;
+            Value second;
+
+            Pair() = default;
+            Pair(EKV entry);
+        };
+
+        // Iterates across buckets.
+        class iterator
+        {
+            private:
+                Pair* ptr;
+            
+            public:
+                iterator(Pair* ptr);
+                iterator(const iterator& other);
+                iterator& operator=(const iterator& other);
+
+                Pair& operator*() const;
+                iterator& operator++();
+                iterator operator++(int);
+                iterator& operator--();
+                iterator operator--(int);
+                bool operator==(const iterator& other);
+                bool operator!=(const iterator& other);
+        };
+
+        // Iterates across elements of a single bucket.
+        class local_iterator
+        {
+            private:
+                Pair* ptr;
+                int bucketIndex;
+            
+            public:
+                local_iterator(Pair* ptr);
+                local_iterator(const local_iterator& other);
+                local_iterator& operator=(const local_iterator& other);
+
+                Pair& operator*() const;
+                local_iterator& operator++();
+                local_iterator operator++(int);
+                local_iterator& operator--();
+                local_iterator operator--(int);
+                bool operator==(const local_iterator& other);
+                bool operator!=(const local_iterator& other);
+        };
+
+        class const_iterator
+        {
+            private:
+                const Pair* ptr;
+            
+            public:
+                const_iterator(const Pair* ptr);
+                const_iterator(const const_iterator& other);
+                const_iterator& operator=(const const_iterator& other);
+
+                const Pair& operator*() const;
+                const_iterator& operator++();
+                const_iterator operator++(int);
+                const_iterator& operator--();
+                const_iterator operator--(int);
+                bool operator==(const const_iterator& other) const;
+                bool operator!=(const const_iterator& other) const;
+        };
+
+        class const_local_iterator
+        {
+            private:
+                const Pair* ptr;
+                const int bucketIndex;
+
+            public:
+                const_local_iterator(const Pair* ptr);
+                const_local_iterator(const const_local_iterator& other);
+                const_local_iterator& operator=(const const_local_iterator& other);
+
+                const Pair& operator*() const;
+                const_local_iterator& operator++();
+                const_local_iterator operator++(int);
+                const_local_iterator& operator--();
+                const_local_iterator operator--(int);
+                bool operator==(const const_local_iterator& other) const;
+                bool operator!=(const const_local_iterator& other) const;
+        };
+
+        // Iterator to first entry in first
+        // non-empty bucket.
+        iterator begin();
+        iterator end();
+        const_iterator cbegin();
+        const_iterator cend();
+
+        // Iterator to first element of specified bucket.
+        local_iterator begin(int n);
+        local_iterator end(int n);
+        const_local_iterator cbegin(int n);
+        const_local_iterator cend(int n);
+
+        // For debugging.
+        void printTable();
 };
 
 KVTEMP
 chainTable<Key, Value>::chainTable(const chainTable<Key, Value>& other)
 {
-    this->entries = Array<EKVList>((int) other.entries.capacity());
+    this->entries = Array<EKVList>(static_cast<int>(other.entries.capacity()));
     size_t size = this->entries.capacity();
     for (size_t i = 0; i < size; i++)
         entries.push(copy(other.entries[i]));
@@ -71,7 +177,7 @@ KVTEMP
 chainTable<Key, Value>& chainTable<Key, Value>
 ::operator=(const chainTable<Key, Value>& other)
 {
-    this->entries = Array<EKVList>((int) other.entries.capacity());
+    this->entries = Array<EKVList>(static_cast<int>(other.entries.capacity()));
     size_t size = this->entries.capacity();
     for (size_t i = 0; i < size; i++)
         entries.push(copy(other.entries[i]));
@@ -89,8 +195,8 @@ EKV& chainTable<Key, Value>::emptyAdd(Key key)
     resize(); // Grow if needed.
 
     uint32_t hash = hashKey(key);
-    uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
-    int index = (int) (hash & bitmask);
+    uint32_t bitmask = (uint32_t)(entries.capacity() - 1);
+    int index = static_cast<int>(hash & bitmask);
     maxIndex = (index > maxIndex) ? index : maxIndex;
 
     EKVList& list = entries.slot(index);
@@ -114,18 +220,15 @@ Value& chainTable<Key, Value>::operator[](Key key)
     return entry->value;
 }
 
-// KVTEMP
-// int chainTable<Key, Value>::getIndex(uint32_t hash) {}
-
 KVTEMP
 void chainTable<Key, Value>::reorder()
 {
     // Easier to just construct a new table.
     size_t capacity = entries.capacity(); // Cover entire array.
-    chainTable<Key, Value> newTable((int) capacity);
+    chainTable<Key, Value> newTable(static_cast<int>(capacity));
     for (size_t i = 0; i < capacity; i++)
     {
-        EKVList& list = entries.slot((int) i);
+        EKVList& list = entries.slot(static_cast<int>(i));
         
         // Handles empty lists as well.
         for (auto* ptr = list.front(); ptr != nullptr; ptr = ptr->next)
@@ -137,6 +240,7 @@ void chainTable<Key, Value>::reorder()
 
     this->entries = newTable.entries;
     this->bucketCount = newTable.bucketCount;
+    this->maxIndex = newTable.maxIndex; // Re-ordering may have led to a new max index.
     // entryCount doesn't change.
 }
 
@@ -170,8 +274,8 @@ EKV* chainTable<Key, Value>::getEntry(Key key)
         return nullptr;
     
     uint32_t hash = hashKey(key);
-    uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
-    int index = (int) (hash & bitmask);
+    uint32_t bitmask = (uint32_t)(entries.capacity() - 1);
+    int index = static_cast<int>(hash & bitmask);
     EKVList& list = entries.slot(index);
     
     EKV temp(key, hash); // temp.value uninitialized.
@@ -196,8 +300,8 @@ void chainTable<Key, Value>::add(Key key, Value value)
     resize(); // Grow if needed.
 
     uint32_t hash = hashKey(key);
-    uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
-    int index = (int) (hash & bitmask);
+    uint32_t bitmask = (uint32_t)(entries.capacity() - 1);
+    int index = static_cast<int>(hash & bitmask);
     maxIndex = (index > maxIndex) ? index : maxIndex;
 
     EKVList& list = entries.slot(index);
@@ -238,9 +342,8 @@ void chainTable<Key, Value>::remove(Key key)
         return;
     
     uint32_t hash = hashKey(key);
-    uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
-    int index = (int) (hash & bitmask);
-
+    uint32_t bitmask = (uint32_t)(entries.capacity() - 1);
+    int index = static_cast<int>(hash & bitmask);
     EKVList& list = entries.slot(index);
     EKV temp = EKV(key, hash);
     if (!list.has(temp))
@@ -258,7 +361,7 @@ void chainTable<Key, Value>::merge(const chainTable<Key, Value>& other)
     size_t capacity = other.entries.capacity();
     for (size_t i = 0; i < capacity; i++)
     {
-        EKVList& list = other.entries.slot((int) i);
+        EKVList& list = other.entries.slot(static_cast<int>(i));
         if (list.front() == nullptr)
             continue;
 
@@ -280,4 +383,28 @@ KVTEMP
 int chainTable<Key, Value>::entrySize()
 {
     return entryCount;
+}
+
+// Pair struct.
+KVTEMP
+chainTable<Key, Value>::Pair::Pair(EKV entry) :
+    first(entry.key), second(entry.value) {}
+
+// For debugging.
+KVTEMP
+void chainTable<Key, Value>::printTable()
+{
+    for (size_t i = 0; i < entries.capacity(); i++)
+    {
+        EKVList& list = entries.slot(static_cast<int>(i));
+        if (list.front() == nullptr)
+            std::cout << "Slot " << i << ": EMPTY\n";
+        else
+        {
+            std::cout << "Slot " << i << ": ";
+            for (auto& pair : list)
+                std::cout << "(" << pair.key << ", " << pair.value << ")->";
+            std::cout << '\n';
+        }
+    }
 }
