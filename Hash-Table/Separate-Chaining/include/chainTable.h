@@ -1,8 +1,8 @@
 #pragma once
-#include "../../../(Dynamic) Array/include/array.h"
+#include "../../../Dynamic-Array/include/array.h"
 #include "../../General/include/entryStruct.h"
 #include "../../General/include/hashFunctions.h"
-#include "../../../Linked List/Singly Linked List/Regular/include/linkedList.h"
+#include "../../../Linked-List/Singly-Linked-List/Regular/include/linkedList.h"
 #include <cstdint>
 
 #include <iostream> // FOR DEBUGGING.
