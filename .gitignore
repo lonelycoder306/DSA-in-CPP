@@ -1,7 +1,7 @@
-(Dynamic) Array/VS Solution/*
-Linked List/Singly Linked List/Regular/VS Solution/*
-Hash Table/Separate Chaining/VS Solution/*
-Hash Table/Linear Probing/VS Solution/*
+Dynamic-Array/VS Solution/*
+Linked-List/Singly-Linked-List/Regular/VS Solution/*
+Hash-Table/Separate-Chaining/VS Solution/*
+Hash-Table/Linear-Probing/VS Solution/*
 .vscode/*
 *.exe
 *.ps1
