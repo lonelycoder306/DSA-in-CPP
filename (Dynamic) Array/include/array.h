@@ -461,13 +461,13 @@ bool arrIter::operator!=(const arrIter& other)
 }
 
 TEMP
-typename arrIter Array<T>::begin()
+typename arrIter Array<T>::begin() noexcept
 {
     return iterator(front());
 }
 
 TEMP
-typename arrIter Array<T>::end()
+typename arrIter Array<T>::end() noexcept
 {
     return iterator(back());
 }
@@ -546,25 +546,25 @@ bool constArrIter::operator!=(const const_iterator& other) const
 }
 
 TEMP
-typename constArrIter Array<T>::begin() const
+typename constArrIter Array<T>::begin() const noexcept
 {
     return const_iterator(front());
 }
 
 TEMP
-typename constArrIter Array<T>::end() const
+typename constArrIter Array<T>::end() const noexcept
 {
     return const_iterator(back());
 }
 
 TEMP
-typename constArrIter Array<T>::cbegin() const
+typename constArrIter Array<T>::cbegin() const noexcept
 {
     return const_iterator(front());
 }
 
 TEMP
-typename constArrIter Array<T>::cend() const
+typename constArrIter Array<T>::cend() const noexcept
 {
     return const_iterator(back());
 }
