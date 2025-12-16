@@ -4,7 +4,7 @@ CXX := g++
 CXXFLAGS := -O2 -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Werror
 AR = ar rcs
 
-ARRAY_DIR	:= \(Dynamic\)\ Array
+ARRAY_DIR	:= (Dynamic)\ Array
 ARRAY_EXEC	:= array.exe
 CHAIN_DIR	:= Hash\ Table/Separate\ Chaining
 CHAIN_EXEC	:= chain.exe
