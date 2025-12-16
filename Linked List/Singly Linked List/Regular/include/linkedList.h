@@ -76,7 +76,8 @@ class LinkedList
         void sortRemove(T object);
 
         // Make a copy of the list.
-        friend LinkedList<T> copy(const LinkedList<T>& list);
+        template<typename U>
+        friend LinkedList<U> copy(const LinkedList<U>& list);
 
         class iterator
         {
@@ -114,17 +115,16 @@ class LinkedList
 
         iterator begin();
         iterator end();
-        const_iterator cbegin();
-        const_iterator cend();
+        const_iterator begin() const;
+        const_iterator end() const;
+        const_iterator cbegin() const;
+        const_iterator cend() const;
 };
 
 TEMP
-LinkedList<T>::LinkedList()
-{
-    head = nullptr;
-    listLength = 0;
-    isSorted = INVALID;
-}
+LinkedList<T>::LinkedList() :
+    head(nullptr), listLength(0),
+    isSorted(INVALID) {}
 
 TEMP
 void LinkedList<T>::clear()
@@ -145,7 +145,6 @@ void LinkedList<T>::clear()
 TEMP
 LinkedList<T>::LinkedList(const LinkedList<T>& other)
 {
-    int length = other.listLength;
     for (ListNode<T>* node = other.head; node != nullptr; node = node->next)
         this->append(node->object);
     
@@ -646,63 +645,75 @@ typename LLIter LinkedList<T>::end()
 
 // Const iterator implementation.
 
-#define constIter LinkedList<T>::const_iterator
+#define constListIter LinkedList<T>::const_iterator
 
 TEMP
-constIter::const_iterator(const ListNode<T>* ptr) :
+constListIter::const_iterator(const ListNode<T>* ptr) :
     ptr(ptr) {}
 
 TEMP
-constIter::const_iterator(const const_iterator& other) :
+constListIter::const_iterator(const const_iterator& other) :
     ptr(other.ptr) {}
 
 TEMP
-typename constIter& constIter::operator=(const constIter& other)
+typename constListIter& constListIter::operator=(const constListIter& other)
 {
     this->ptr = other.ptr;
 }
 
 TEMP
-const T& constIter::operator*() const
+const T& constListIter::operator*() const
 {
     return ptr->object;
 }
 
 TEMP
-typename constIter& constIter::operator++()
+typename constListIter& constListIter::operator++()
 {
     ptr = ptr->next;
     return *this;
 }
 
 TEMP
-typename constIter constIter::operator++(int n)
+typename constListIter constListIter::operator++(int n)
 {
-    constIter temp = *this;
+    constListIter temp = *this;
     ptr = ptr->next;
     return temp;
 }
 
 TEMP
-bool constIter::operator==(const constIter& other) const
+bool constListIter::operator==(const constListIter& other) const
 {
     return (this->ptr == other.ptr);
 }
 
 TEMP
-bool constIter::operator!=(const constIter& other) const
+bool constListIter::operator!=(const constListIter& other) const
 {
     return (this->ptr != other.ptr);
 }
 
 TEMP
-typename constIter LinkedList<T>::cbegin()
+typename constListIter LinkedList<T>::begin() const
 {
     return const_iterator(front());
 }
 
 TEMP
-typename constIter LinkedList<T>::cend()
+typename constListIter LinkedList<T>::end() const
+{
+    return const_iterator(back());
+}
+
+TEMP
+typename constListIter LinkedList<T>::cbegin() const
+{
+    return const_iterator(front());
+}
+
+TEMP
+typename constListIter LinkedList<T>::cend() const
 {
     return const_iterator(back());
 }
