@@ -4,46 +4,77 @@ CXX := g++
 CXXFLAGS := -O2 -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Werror
 AR = ar rcs
 
-ARRAY_DIR	:= \(Dynamic\)\ Array
-ARRAY_EXEC	:= array.exe
-CHAIN_DIR	:= Hash\ Table/Separate\ Chaining
-CHAIN_EXEC	:= chain.exe
-LINEAR_DIR	:= Hash\ Table/Linear\ Probing
-LINEAR_EXEC	:= linear.exe
-LIST_DIR	:= Linked\ List/Singly\ Linked\ List/Regular
-LIST_EXEC	:= list.exe
-
-INCLUDE = -I$(ARRAY_DIR)/include -I$(CHAIN_DIR)/include -I$(LINEAR_DIR)/include -I$(LIST_DIR)/include
-LIB_FILE = lib.cpp
-LIB_NAME = dsalib.a
-
+INCLUDE_DIR := include
 SRC_DIR := src
-FILE := test.cpp
-EXECS = $(ARRAY_EXEC) $(CHAIN_EXEC) $(LINEAR_EXEC) $(LIST_EXEC)
 
-all: $(EXECS)
+ARRAY_NAME	:= array
+ARRAY_DIR	:= Dynamic-Array
 
-lib:
+CHAIN_NAME	:= chainTable
+CHAIN_DIR	:= Hash-Table/Separate-Chaining
+
+LINEAR_NAME	:= linearTable
+LINEAR_DIR	:= Hash-Table/Linear-Probing
+
+LIST_NAME	:= linkedList
+LIST_DIR	:= Linked-List/Singly-Linked-List/Regular
+
+INCLUDE := -I$(ARRAY_DIR)/$(INCLUDE_DIR) -I$(CHAIN_DIR)/$(INCLUDE_DIR) \
+			-I$(LINEAR_DIR)/$(INCLUDE_DIR) -I$(LIST_DIR)/$(INCLUDE_DIR)
+LIB_FILE = lib.cpp
+LIB_NAME = libdsa.a
+
+EXEC_FILE := test.cpp
+NAMES = $(ARRAY_NAME) $(CHAIN_NAME) $(LINEAR_NAME) $(LIST_NAME)
+EXECS = $(addsuffix .exe, $(NAMES))
+LIBS = $(addprefix lib, $(addsuffix .a, $(NAMES)))
+
+test: test-array test-chain test-linear test-list
+
+lib: $(LIB_FILE)
 	@$(CXX) $(CXXFLAGS) $(INCLUDE) -c $(LIB_FILE) -o tmp.o
 	@$(AR) $(LIB_NAME) tmp.o
 	@rm -f tmp.o
 
-$(ARRAY_EXEC) : $(ARRAY_DIR)/$(SRC_DIR)/$(FILE)
-	@$(CXX) $(CXXFLAGS) "$<" -o $@
+test-array: $(ARRAY_DIR)/$(SRC_DIR)/$(EXEC_FILE)
+	@$(CXX) $(CXXFLAGS) $< -o $(ARRAY_NAME).exe
 
-$(CHAIN_EXEC) : $(CHAIN_DIR)/$(SRC_DIR)/$(FILE)
-	@$(CXX) $(CXXFLAGS) "$<" -o $@
+lib-array: $(ARRAY_DIR)/$(INCLUDE_DIR)/$(ARRAY_NAME).cpp
+	@$(CXX) $(CXXFLAGS) -c $< -o tmp.o
+	@$(AR) lib$(ARRAY_NAME).a tmp.o
+	@rm -f tmp.o
 
-$(LINEAR_EXEC) : $(LINEAR_DIR)/$(SRC_DIR)/$(FILE)
-	@$(CXX) $(CXXFLAGS) "$<" -o $@
+test-chain: $(CHAIN_DIR)/$(SRC_DIR)/$(EXEC_FILE)
+	@$(CXX) $(CXXFLAGS) $< -o $(CHAIN_NAME).exe
 
-$(LIST_EXEC) : $(LIST_DIR)/$(SRC_DIR)/$(FILE)
-	@$(CXX) $(CXXFLAGS) "$<" -o $@
+lib-chain: $(CHAIN_DIR)/$(INCLUDE_DIR)/$(CHAIN_NAME).cpp
+	@$(CXX) $(CXXFLAGS) -c $< -o tmp.o
+	@$(AR) lib$(CHAIN_NAME).a tmp.o
+	@rm -f tmp.o
 
-clean:
+test-linear: $(LINEAR_DIR)/$(SRC_DIR)/$(EXEC_FILE)
+	@$(CXX) $(CXXFLAGS) $< -o $(LINEAR_NAME).exe
+
+lib-linear: $(LINEAR_DIR)/$(INCLUDE_DIR)/$(LINEAR_NAME).cpp
+	@$(CXX) $(CXXFLAGS) -c $< -o tmp.o
+	@$(AR) lib$(LINEAR_NAME).a tmp.o
+	@rm -f tmp.o
+
+test-list: $(LIST_DIR)/$(SRC_DIR)/$(EXEC_FILE)
+	@$(CXX) $(CXXFLAGS) $< -o $(LIST_NAME).exe
+
+lib-list: $(LIST_DIR)/$(INCLUDE_DIR)/$(LIST_NAME).cpp
+	@$(CXX) $(CXXFLAGS) -c $< -o tmp.o
+	@$(AR) lib$(LIST_NAME).a tmp.o
+	@rm -f tmp.o
+
+clean-test:
 	@rm -f $(EXECS)
 
-clean-lib: clean
+clean-lib:
+	@rm -f $(LIBS)
+
+clean-gen-lib:
 	@rm -f $(LIB_NAME)
 
 re: clean all
