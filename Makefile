@@ -4,7 +4,7 @@ CXX := g++
 CXXFLAGS := -O2 -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Werror
 AR = ar rcs
 
-ARRAY_DIR	:= (Dynamic)\ Array
+ARRAY_DIR	:= \(Dynamic\)\ Array
 ARRAY_EXEC	:= array.exe
 CHAIN_DIR	:= Hash\ Table/Separate\ Chaining
 CHAIN_EXEC	:= chain.exe
@@ -43,7 +43,7 @@ $(LIST_EXEC) : $(LIST_DIR)/$(SRC_DIR)/$(FILE)
 clean:
 	@rm -f $(EXECS)
 
-clean-lib:
+clean-lib: clean
 	@rm -f $(LIB_NAME)
 
 re: clean all
