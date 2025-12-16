@@ -91,28 +91,27 @@ class Array
                 bool operator!=(const const_iterator& other) const;
         };
 
-        iterator begin();
-        iterator end();
-        const_iterator cbegin();
-        const_iterator cend();
+        iterator begin() noexcept;
+        iterator end() noexcept;
+        const_iterator begin() const noexcept;
+        const_iterator end() const noexcept;
+        const_iterator cbegin() const noexcept;
+        const_iterator cend() const noexcept;
 };
 
 TEMP
-Array<T>::Array()
-{
-    entries = nullptr; // Well-defined to call delete[] on nullptr.
-    _count = 0;
-    _capacity = 0;
-}
+Array<T>::Array() :
+    entries(nullptr), _count(0),
+    _capacity(0) {}
 
 TEMP
 Array<T>::Array(int size)
 {
     if (size < 0)
-        throw std::out_of_range("Negative index cannot be used.");
+        throw std::out_of_range("Negative size cannot be used.");
     entries = new T[size];
-    _count = (size_t) 0; // No elements used at time of construction.
-    _capacity = (size_t) size;
+    _count = 0; // No elements used at time of construction.
+    _capacity = static_cast<size_t>(size);
 }
 
 TEMP
@@ -547,13 +546,25 @@ bool constArrIter::operator!=(const const_iterator& other) const
 }
 
 TEMP
-typename constArrIter Array<T>::cbegin()
+typename constArrIter Array<T>::begin() const
 {
     return const_iterator(front());
 }
 
 TEMP
-typename constArrIter Array<T>::cend()
+typename constArrIter Array<T>::end() const
 {
-    return const_iterator(end());
+    return const_iterator(back());
+}
+
+TEMP
+typename constArrIter Array<T>::cbegin() const
+{
+    return const_iterator(front());
+}
+
+TEMP
+typename constArrIter Array<T>::cend() const
+{
+    return const_iterator(back());
 }
