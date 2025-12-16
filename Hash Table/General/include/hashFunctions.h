@@ -1,12 +1,13 @@
 #pragma once
 #include <cstdint>
 #include <cstring>
+#include <string>
 #include <string_view>
 
-typedef uint32_t Hash;
+using Hash = uint32_t;
 
 template<typename Key>
-Hash hashKey(Key key, size_t size = 0);
+Hash hashKey(Key key, size_t size = -1);
 Hash hashDouble(double key);
 Hash hashChar(char key);
 Hash hashString(std::string_view string);
@@ -20,15 +21,17 @@ template<typename Key>
 Hash hashKey(Key key, size_t size)
 {
     if constexpr (std::is_same_v<Key, int>)
-        return hashDouble((double) key);
+        return hashDouble(static_cast<double>(key));
     if constexpr (std::is_same_v<Key, double>)
         return hashDouble(key);
     if constexpr (std::is_same_v<Key, char>)
         return hashChar(key);
     if constexpr (std::is_same_v<Key, std::string_view>)
         return hashString(key);
+    if constexpr (std::is_same_v<Key, std::string>)
+        return hashString(key);
     if constexpr (std::is_same_v<Key, const char *>)
-        return hashCStr(key, strlen(key));
+        return hashCStr(key);
     if constexpr (std::is_same_v<Key, char *>)
         return hashCStr(key, size);
     return 0; // Error return.
@@ -71,7 +74,7 @@ Hash hashString(std::string_view string)
 
 Hash hashCStr(const char* string, size_t length)
 {
-    if ((int) length == -1)
+    if (length == -1)
         length = strlen(string); // Null-terminated.
     const uint8_t* bytes = reinterpret_cast<const uint8_t*>(string);
     return hashBytes(bytes, length);
