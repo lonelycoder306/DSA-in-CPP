@@ -1,7 +1,7 @@
 # General Makefile to compile all of the data structures in this project.
 
 CXX := g++
-CXXFLAGS := -O2 -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Werror
+CXXFLAGS := -g -O2 -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Werror
 AR = ar rcs
 
 INCLUDE_DIR := include
@@ -26,7 +26,7 @@ LIB_NAME = libdsa.a
 
 EXEC_FILE := test.cpp
 NAMES = $(ARRAY_NAME) $(CHAIN_NAME) $(LINEAR_NAME) $(LIST_NAME)
-EXECS = $(addsuffix .exe, $(NAMES))
+EXECS = $(NAMES)
 LIBS = $(addprefix lib, $(addsuffix .a, $(NAMES)))
 
 test: test-array test-chain test-linear test-list
@@ -37,7 +37,7 @@ lib: $(LIB_FILE)
 	@rm -f tmp.o
 
 test-array: $(ARRAY_DIR)/$(SRC_DIR)/$(EXEC_FILE)
-	@$(CXX) $(CXXFLAGS) $< -o $(ARRAY_NAME).exe
+	@$(CXX) $(CXXFLAGS) $< -o $(ARRAY_NAME)
 
 lib-array: $(ARRAY_DIR)/$(INCLUDE_DIR)/$(ARRAY_NAME).cpp
 	@$(CXX) $(CXXFLAGS) -c $< -o tmp.o
@@ -45,7 +45,7 @@ lib-array: $(ARRAY_DIR)/$(INCLUDE_DIR)/$(ARRAY_NAME).cpp
 	@rm -f tmp.o
 
 test-chain: $(CHAIN_DIR)/$(SRC_DIR)/$(EXEC_FILE)
-	@$(CXX) $(CXXFLAGS) $< -o $(CHAIN_NAME).exe
+	@$(CXX) $(CXXFLAGS) $< -o $(CHAIN_NAME)
 
 lib-chain: $(CHAIN_DIR)/$(INCLUDE_DIR)/$(CHAIN_NAME).cpp
 	@$(CXX) $(CXXFLAGS) -c $< -o tmp.o
@@ -53,7 +53,7 @@ lib-chain: $(CHAIN_DIR)/$(INCLUDE_DIR)/$(CHAIN_NAME).cpp
 	@rm -f tmp.o
 
 test-linear: $(LINEAR_DIR)/$(SRC_DIR)/$(EXEC_FILE)
-	@$(CXX) $(CXXFLAGS) $< -o $(LINEAR_NAME).exe
+	@$(CXX) $(CXXFLAGS) $< -o $(LINEAR_NAME)
 
 lib-linear: $(LINEAR_DIR)/$(INCLUDE_DIR)/$(LINEAR_NAME).cpp
 	@$(CXX) $(CXXFLAGS) -c $< -o tmp.o
@@ -61,7 +61,7 @@ lib-linear: $(LINEAR_DIR)/$(INCLUDE_DIR)/$(LINEAR_NAME).cpp
 	@rm -f tmp.o
 
 test-list: $(LIST_DIR)/$(SRC_DIR)/$(EXEC_FILE)
-	@$(CXX) $(CXXFLAGS) $< -o $(LIST_NAME).exe
+	@$(CXX) $(CXXFLAGS) $< -o $(LIST_NAME)
 
 lib-list: $(LIST_DIR)/$(INCLUDE_DIR)/$(LIST_NAME).cpp
 	@$(CXX) $(CXXFLAGS) -c $< -o tmp.o
