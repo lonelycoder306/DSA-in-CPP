@@ -16,6 +16,7 @@ CHAIN_NAME	:= chainTable
 CHAIN_DIR	:= Hash-Table/Separate-Chaining
 
 LINEAR_NAME	:= linearTable
+ROBIN_NAME	:= robinTable
 LINEAR_DIR	:= Hash-Table/Linear-Probing
 
 LIST_NAME	:= linkedList
@@ -27,7 +28,7 @@ LIB_FILE = lib.cpp
 LIB_NAME = libdsa.a
 
 EXEC_FILE := test.cpp
-NAMES = $(ARRAY_NAME) $(CHAIN_NAME) $(LINEAR_NAME) $(LIST_NAME)
+NAMES = $(ARRAY_NAME) $(CHAIN_NAME) $(LINEAR_NAME) $(LIST_NAME) $(ROBIN_NAME)
 EXECS = $(NAMES)
 LIBS = $(addprefix lib, $(addsuffix .a, $(NAMES)))
 
@@ -60,6 +61,11 @@ test-linear: $(LINEAR_DIR)/$(SRC_DIR)/$(EXEC_FILE)
 lib-linear: $(LINEAR_DIR)/$(INCLUDE_DIR)/$(LINEAR_NAME).cpp
 	@$(CXX) $(CXXFLAGS) -c $< -o tmp.o
 	@$(AR) lib$(LINEAR_NAME).a tmp.o
+	@rm -f tmp.o
+
+lib-robin: $(LINEAR_DIR)/$(INCLUDE_DIR)/$(ROBIN_NAME).cpp
+	@$(CXX) $(CXXFLAGS) -c $< -o tmp.o
+	@$(AR) lib$(ROBIN_NAME).a tmp.o
 	@rm -f tmp.o
 
 test-list: $(LIST_DIR)/$(SRC_DIR)/$(EXEC_FILE)
