@@ -196,7 +196,8 @@ chainTable<Key, Value, HashFunc>::chainTable(const chainTable<Key, Value, HashFu
 
 KVHTEMP
 chainTable<Key, Value, HashFunc>::chainTable(int size) :
-    entries(size) {}
+    getHash(HashFunc()), entries(size), bucketCount(0),
+    entryCount(0), maxIndex(-1) {}
 
 KVHTEMP
 chainTable<Key, Value, HashFunc>& chainTable<Key, Value, HashFunc>
@@ -251,7 +252,7 @@ void chainTable<Key, Value, HashFunc>::reorder()
     // Easier to just construct a new table.
     size_t capacity = entries.capacity(); // Cover entire array.
     chainTable<Key, Value, HashFunc> newTable(static_cast<int>(capacity));
-    for (size_t i = 0; i < capacity; i++)
+    for (size_t i = 0; i < this->maxIndex + 1; i++)
     {
         EKVList& list = entries.slot(static_cast<int>(i));
         
@@ -277,19 +278,14 @@ void chainTable<Key, Value, HashFunc>::resize()
 {
     if ((entries.capacity() * loadFactor) < bucketCount + 1)
     {
-        if (maxIndex != -1)
-            setCount(this->entries, (size_t) (maxIndex + 1));
-        entries.grow();
+        if (entryCount == 0)
+            entries.grow();
+        else
+        {
+            entries.increaseCapacity();
+            reorder();
+        }
     }
-    else
-        return;
-
-    // Need to re-index entire array after resizing.
-    // Descend into each list and extract its node
-    // elements to construct the new table.
-    
-    if (entryCount != 0) // There are elements to reorder.
-        reorder();
 }
 
 KVHTEMP

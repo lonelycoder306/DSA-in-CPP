@@ -72,7 +72,7 @@ void linearTable<Key, Value>::reorder()
 {
     size_t capacity = entries.capacity();
     linearTable<Key, Value> newTable(static_cast<int>(capacity));
-    for (size_t i = 0; i < capacity; i++)
+    for (size_t i = 0; i < maxIndex + 1; i++)
     {
         EKV entry = entries.slot((int) i);
         if (entry.state != VALID)
@@ -89,19 +89,14 @@ void linearTable<Key, Value>::resize()
 {   
     if ((entries.capacity() * loadFactor) < count + 1)
     {
-        if (maxIndex != -1)
-            setCount(this->entries, (size_t) (maxIndex + 1));
-        entries.grow();
+        if (count == 0)
+            entries.grow();
+        else
+        {
+            entries.increaseCapacity();
+            reorder();
+        }
     }
-    else
-        return;
-
-    // Need to re-index entire array after this.
-    // Descend into each list and extract its node
-    // elements to construct the new table.
-    
-    if (count != 0) // There are elements to reorder.
-        reorder();
 }
 
 KVTEMP
