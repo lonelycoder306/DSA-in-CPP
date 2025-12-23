@@ -25,7 +25,7 @@ class Array
         ~Array();
 
         // Basic operators.
-        T& operator[](int index); // index < count.
+        inline T& operator[](int index); // index < count.
         bool operator==(const Array<T>& other);
 
         // Utility.
@@ -34,21 +34,22 @@ class Array
         // It simply increases the capacity field as *if*
         // we were actually growing the array.
         // Use with care.
-        void increaseCapacity();
+        inline void increaseCapacity();
 
         void push(T element);
         int position(T element);
         void insert(T element, int index);
         T erase(int index);
         void remove(T element);
-        T pop();
+        inline T pop();
         void popn(int n);
-        size_t count();
-        size_t capacity();
-        T* front();
-        T* back();
-        T& slot(int index); // index < capacity.
+        inline size_t count() const;
+        inline size_t capacity() const;
+        inline T* front();
+        inline T* back();
+        inline T& slot(int index); // index < capacity.
         void slotInsert(T element, int index); // index < capacity.
+        void fillArray(T element, bool capacity = false);
 
         class iterator
         {
@@ -183,7 +184,7 @@ Array<T>::~Array()
 }
 
 TEMP
-T& Array<T>::operator[](int index)
+inline T& Array<T>::operator[](int index)
 {
     if ((index < 0) || ((size_t) index >= _count))
         throw std::out_of_range("Invalid index.");
@@ -219,7 +220,7 @@ void Array<T>::grow()
 }
 
 TEMP
-void Array<T>::increaseCapacity()
+inline void Array<T>::increaseCapacity()
 {
     _capacity = (_capacity == 0 ? 8 : _capacity * 2);
 }
@@ -330,7 +331,7 @@ void Array<T>::remove(T element)
 }
 
 TEMP
-T Array<T>::pop()
+inline T Array<T>::pop()
 {
     _count--;
     return entries[(int) _count];
@@ -347,31 +348,31 @@ void Array<T>::popn(int n)
 }
 
 TEMP
-size_t Array<T>::count()
+inline size_t Array<T>::count() const
 {
     return _count;
 }
 
 TEMP
-size_t Array<T>::capacity()
+inline size_t Array<T>::capacity() const
 {
     return _capacity;
 }
 
 TEMP
-T* Array<T>::front()
+inline T* Array<T>::front()
 {
     return entries;
 }
 
 TEMP
-T* Array<T>::back()
+inline T* Array<T>::back()
 {
     return entries + _count;
 }
 
 TEMP
-T& Array<T>::slot(int index)
+inline T& Array<T>::slot(int index)
 {
     if ((index < 0) || ((size_t) index >= _capacity))
         throw std::out_of_range("Invalid index.");
@@ -390,6 +391,18 @@ void Array<T>::slotInsert(T element, int index)
     shift(1, index);
     entries[index] = element;
     _count++;
+}
+
+TEMP
+void Array<T>::fillArray(T object, bool capacity)
+{
+    for (size_t i = 0; i < _count; i++)
+        entries[i] = object;
+    if (capacity)
+    {
+        for (size_t i = _count; i < _capacity; i++)
+            entries[i] = object;
+    }
 }
 
 // Iterator implementation.
