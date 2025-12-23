@@ -1,7 +1,7 @@
 #pragma once
 #include "../../../Dynamic-Array/include/array.h"
-#include "../../General/include/entryStruct.h"
-#include "../../General/include/hashFunctions.h"
+#include "../../General/entryStruct.h"
+#include "../../General/hashFunctions.h"
 #include "../../../Linked-List/Singly-Linked-List/Regular/include/linkedList.h"
 #include <cstdint>
 
