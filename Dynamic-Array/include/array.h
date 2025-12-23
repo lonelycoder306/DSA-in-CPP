@@ -30,12 +30,11 @@ class Array
 
         // Utility.
         void grow();
-        // Making it inline was the only way to prevent
-        // odd compiler/linker errors.
-        friend inline void setCount(Array<T>& list, size_t count)
-        {
-            list._count = count;
-        }
+        // This does not reallocate to a larger array.
+        // It simply increases the capacity field as *if*
+        // we were actually growing the array.
+        // Use with care.
+        void increaseCapacity();
 
         void push(T element);
         int position(T element);
@@ -217,6 +216,12 @@ void Array<T>::grow()
     this->entries = newEntries;
     // this->count does not change.
     // newEntries goes out of scope here.
+}
+
+TEMP
+void Array<T>::increaseCapacity()
+{
+    _capacity = (_capacity == 0 ? 8 : _capacity * 2);
 }
 
 TEMP
