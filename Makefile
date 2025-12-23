@@ -1,7 +1,9 @@
 # General Makefile to compile all of the data structures in this project.
 
 CXX := g++
-CXXFLAGS := -g -O2 -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Werror
+CXXFLAGS := -g -O2 -Wall -Wextra \
+			-Wno-unused-parameter -Wno-sign-compare -Wno-maybe-uninitialized \
+			-Werror
 AR = ar rcs
 
 INCLUDE_DIR := include
