@@ -1,3 +1,9 @@
+/*  This hash table has a basic implementation of open addressing to deal with hash collisions.
+*   It uses linear probing (rather than quadratic probing or similar alternatives) to traverse through the array upon
+*   collisions.
+*   Deletions are dealt with using tombstones rather than back-shifting (or other methods), and the main structure is an *   AOS (array of structs).
+*/
+
 #pragma once
 #include "../../../Dynamic-Array/include/array.h"
 #include "../../General/entryStruct.h"

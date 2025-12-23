@@ -1,10 +1,14 @@
+/*  This hash table implementation uses a basic separate chaining approach for hash collisions.
+*   Each bucket contains a (non-intrusive/regular) linked list (implemented in this project),
+*   which is traversed to search for a key match upon a collision occurring.
+*/
+
 #pragma once
 #include "../../../Dynamic-Array/include/array.h"
 #include "../../General/entryStruct.h"
 #include "../../General/hashFunctions.h"
 #include "../../../Linked-List/Singly-Linked-List/Regular/include/linkedList.h"
 #include <cstdint>
-
 #include <iostream> // FOR DEBUGGING.
 
 #define KVHTEMP             template<typename Key, typename Value, typename HashFunc>
