@@ -6,8 +6,8 @@
 *      to average out, improving average performance and reducing worst-case degradation.
 *   2. SOA structure, where we split the states, hashes, keys, and values into separate arrays. Since most of our
 *      searching work or traversal is over the states and hashes, it is more cache friendly to store them in their own
-*      arrays, which leads to a more compact, dense storage that is more cache friendly. Keys and values are then only
-*      accessed if necessary, and directly by index.
+*      arrays where they would be more densely packed. Keys and values are then only accessed if necessary, and directly
+*      by index.
 */
 
 #pragma once
