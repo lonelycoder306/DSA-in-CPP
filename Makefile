@@ -2,7 +2,7 @@
 
 CXX := g++
 CXXFLAGS := -g -O2 -Wall -Wextra \
-			-Wno-unused-parameter -Wno-sign-compare -Wno-maybe-uninitialized \
+			-Wno-sign-compare -Wno-maybe-uninitialized \
 			-Werror
 AR = ar rcs
 
