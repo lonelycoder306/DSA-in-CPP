@@ -1,10 +1,13 @@
 /*  This hash table uses open addressing with linear probing and tombstones for deletion, as in the linearTable 
 *   container class.
 *   However, it additionally includes two optimizations:
-*   1. Robin Hood hashing, where we shift entries with shorter probe distances from their expected slot back to insert  *      new entries whose current probe is further than that from *its* expected slot. This causes most probe distances *      to average out, improving average performance and reducing worst-case degradation.
+*   1. Robin Hood hashing, where we shift entries with shorter probe distances from their expected slot back to insert
+*      new entries whose current probe is further than that from *its* expected slot. This causes most probe distances
+*      to average out, improving average performance and reducing worst-case degradation.
 *   2. SOA structure, where we split the states, hashes, keys, and values into separate arrays. Since most of our
 *      searching work or traversal is over the states and hashes, it is more cache friendly to store them in their own
-*      arrays, which leads to a more compact, dense storage that is more cache friendly. Keys and values are then only *      accessed if necessary, and directly by index.
+*      arrays, which leads to a more compact, dense storage that is more cache friendly. Keys and values are then only
+*      accessed if necessary, and directly by index.
 */
 
 #pragma once
