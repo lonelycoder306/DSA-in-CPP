@@ -18,7 +18,7 @@
 #define KVTEMP template<typename Key, typename Value>
 
 KVTEMP
-class SOATable
+class robinTable
 {
     private:
         // Keeping the same load factor for 
@@ -31,7 +31,7 @@ class SOATable
         size_t count;
         int maxIndex;
 
-        SOATable(size_t size);
+        robinTable(size_t size);
 
         void reorder();
         void resize();
@@ -39,17 +39,17 @@ class SOATable
         inline void insertPair(Key key, Value value, Hash hash, int index);
     
     public:
-        SOATable();
-        SOATable(const SOATable<Key, Value>& other);
-        ~SOATable() = default;
-        SOATable<Key, Value>& operator=(const SOATable<Key, Value>& other);
+        robinTable();
+        robinTable(const robinTable<Key, Value>& other);
+        ~robinTable() = default;
+        robinTable<Key, Value>& operator=(const robinTable<Key, Value>& other);
         Value& operator[](Key key);
 
         void add(Key key, Value value);
         Value* get(Key key);
         void set(Key key, Value value);
         void remove(Key key);
-        void merge(const SOATable<Key, Value>& other);
+        void merge(const robinTable<Key, Value>& other);
         size_t size();
 
         // For debugging.
@@ -57,7 +57,7 @@ class SOATable
 };
 
 KVTEMP
-SOATable<Key, Value>::SOATable() :
+robinTable<Key, Value>::robinTable() :
     hashes(2), keys(2), values(2), states(2),
     count(0), maxIndex(-1)
 {
@@ -65,12 +65,12 @@ SOATable<Key, Value>::SOATable() :
 }
 
 KVTEMP
-SOATable<Key, Value>::SOATable(const SOATable<Key, Value>& other) :
+robinTable<Key, Value>::robinTable(const robinTable<Key, Value>& other) :
     hashes(other.hashes), keys(other.keys), values(other.values),
     states(other.states), count(other.count), maxIndex(other.maxIndex) {}
 
 KVTEMP
-SOATable<Key, Value>::SOATable(size_t size) :
+robinTable<Key, Value>::robinTable(size_t size) :
     hashes(size), keys(size), values(size),
     states(size), count(0), maxIndex(-1)
 {
@@ -78,8 +78,8 @@ SOATable<Key, Value>::SOATable(size_t size) :
 }
 
 KVTEMP
-SOATable<Key, Value>& SOATable<Key, Value>::
-operator=(const SOATable<Key, Value>& other)
+robinTable<Key, Value>& robinTable<Key, Value>::
+operator=(const robinTable<Key, Value>& other)
 {
     this->hashes = other.hashes;
     this->keys = other.keys;
@@ -90,10 +90,10 @@ operator=(const SOATable<Key, Value>& other)
 }
 
 KVTEMP
-void SOATable<Key, Value>::reorder()
+void robinTable<Key, Value>::reorder()
 {
     size_t capacity = states.capacity();
-    SOATable<Key, Value> newTable(capacity);
+    robinTable<Key, Value> newTable(capacity);
     for (size_t i = 0; i < maxIndex + 1; i++)
     {
         EntryState state = states.slot(i);
@@ -111,7 +111,7 @@ void SOATable<Key, Value>::reorder()
 }
 
 KVTEMP
-void SOATable<Key, Value>::resize()
+void robinTable<Key, Value>::resize()
 {   
     if ((states.capacity() * loadFactor) < count + 1)
     {
@@ -134,7 +134,7 @@ void SOATable<Key, Value>::resize()
 }
 
 KVTEMP
-int SOATable<Key, Value>::findSlot(Key key)
+int robinTable<Key, Value>::findSlot(Key key)
 {
     Hash hash = hashKey(key);
     size_t bitmask = hashes.capacity() - 1;
@@ -162,7 +162,7 @@ int SOATable<Key, Value>::findSlot(Key key)
 }
 
 KVTEMP
-inline void SOATable<Key, Value>::insertPair(Key key, Value value, Hash hash, int index)
+inline void robinTable<Key, Value>::insertPair(Key key, Value value, Hash hash, int index)
 {
     keys.slot(index) = key;
     values.slot(index) = value;
@@ -174,7 +174,7 @@ inline void SOATable<Key, Value>::insertPair(Key key, Value value, Hash hash, in
 }
 
 KVTEMP
-void SOATable<Key, Value>::add(Key key, Value value)
+void robinTable<Key, Value>::add(Key key, Value value)
 {
     int slot = findSlot(key);
     if (slot != -1)
@@ -215,7 +215,7 @@ void SOATable<Key, Value>::add(Key key, Value value)
 }
 
 KVTEMP
-Value* SOATable<Key, Value>::get(Key key)
+Value* robinTable<Key, Value>::get(Key key)
 {
     if (count == 0) return nullptr;
     
@@ -227,7 +227,7 @@ Value* SOATable<Key, Value>::get(Key key)
 }
 
 KVTEMP
-void SOATable<Key, Value>::set(Key key, Value value)
+void robinTable<Key, Value>::set(Key key, Value value)
 {
     int slot = findSlot(key);
     if (slot == -1)
@@ -237,7 +237,7 @@ void SOATable<Key, Value>::set(Key key, Value value)
 }
 
 KVTEMP
-void SOATable<Key, Value>::remove(Key key)
+void robinTable<Key, Value>::remove(Key key)
 {
     int slot = findSlot(key);
     if (slot != -1) // Leave it alone if it's empty.
@@ -245,7 +245,7 @@ void SOATable<Key, Value>::remove(Key key)
 }
 
 KVTEMP
-void SOATable<Key, Value>::merge(const SOATable<Key, Value>& other)
+void robinTable<Key, Value>::merge(const robinTable<Key, Value>& other)
 {
     size_t capacity = other.hashes.capacity();
     for (size_t i = 0; i < capacity; i++)
@@ -256,13 +256,13 @@ void SOATable<Key, Value>::merge(const SOATable<Key, Value>& other)
 }
 
 KVTEMP
-size_t SOATable<Key, Value>::size()
+size_t robinTable<Key, Value>::size()
 {
     return count;
 }
 
 KVTEMP
-void SOATable<Key, Value>::printTable()
+void robinTable<Key, Value>::printTable()
 {
     size_t cap = states.capacity();
     for (size_t i = 0; i < cap; i++)
