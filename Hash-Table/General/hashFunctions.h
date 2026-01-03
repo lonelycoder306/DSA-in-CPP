@@ -24,8 +24,6 @@ Hash hashKey(Key key, size_t size)
 {
     if constexpr (std::is_arithmetic_v<Key>)
         return hashNumeric(key);
-    if constexpr (std::is_same_v<Key, double>)
-        return hashDouble(key);
     if constexpr (std::is_same_v<Key, char>)
         return hashChar(key);
     if constexpr (std::is_same_v<Key, std::string_view>)
