@@ -3,12 +3,14 @@
 #include <cstring>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 using Hash = uint32_t;
 
 template<typename Key>
 Hash hashKey(Key key, size_t size = -1);
-Hash hashDouble(double key);
+template<typename T>
+Hash hashNumeric(T key);
 Hash hashChar(char key);
 Hash hashString(std::string_view string);
 Hash hashCStr(const char* string, size_t length = -1);
@@ -20,8 +22,8 @@ Hash hashCStr(const char* string, size_t length = -1);
 template<typename Key>
 Hash hashKey(Key key, size_t size)
 {
-    if constexpr (std::is_same_v<Key, int>)
-        return hashDouble(static_cast<double>(key));
+    if constexpr (std::is_arithmetic_v<Key>)
+        return hashNumeric(key);
     if constexpr (std::is_same_v<Key, double>)
         return hashDouble(key);
     if constexpr (std::is_same_v<Key, char>)
@@ -55,10 +57,11 @@ static Hash hashBytes(const uint8_t* bytes, size_t size)
     return hash;
 }
 
-Hash hashDouble(double key)
+template<typename T>
+Hash hashNumeric(T key)
 {
     const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&key);
-    return hashBytes(bytes, sizeof(key));
+    return hashBytes(bytes, sizeof(T));
 }
 
 Hash hashChar(char key)
