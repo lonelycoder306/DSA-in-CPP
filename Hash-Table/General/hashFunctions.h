@@ -8,19 +8,19 @@
 using Hash = uint32_t;
 
 template<typename Key>
-Hash hashKey(Key key, size_t size = -1);
+inline Hash hashKey(Key key, size_t size = -1);
 template<typename T>
-Hash hashNumeric(T key);
-Hash hashChar(char key);
-Hash hashString(std::string_view string);
-Hash hashCStr(const char* string, size_t length = -1);
+inline Hash hashNumeric(T key);
+inline Hash hashChar(char key);
+inline Hash hashString(std::string_view string);
+inline Hash hashCStr(const char* string, size_t length = -1);
 
 // Need to have the implementations here since
 // this file is #included in source files
 // with template implementations.
 
 template<typename Key>
-Hash hashKey(Key key, size_t size)
+inline Hash hashKey(Key key, size_t size)
 {
     if constexpr (std::is_arithmetic_v<Key>)
         return hashNumeric(key);
@@ -38,7 +38,7 @@ Hash hashKey(Key key, size_t size)
 }
 
 // Using Jenkins' one-at-a-time function.
-static Hash hashBytes(const uint8_t* bytes, size_t size)
+inline Hash hashBytes(const uint8_t* bytes, size_t size)
 {
     Hash hash = 0;
 
@@ -56,24 +56,24 @@ static Hash hashBytes(const uint8_t* bytes, size_t size)
 }
 
 template<typename T>
-Hash hashNumeric(T key)
+inline Hash hashNumeric(T key)
 {
     const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&key);
     return hashBytes(bytes, sizeof(T));
 }
 
-Hash hashChar(char key)
+inline Hash hashChar(char key)
 {
     return (uint32_t) key;
 }
 
-Hash hashString(std::string_view string)
+inline Hash hashString(std::string_view string)
 {
     const uint8_t* bytes = reinterpret_cast<const uint8_t*>(string.data());
     return hashBytes(bytes, string.size());
 }
 
-Hash hashCStr(const char* string, size_t length)
+inline Hash hashCStr(const char* string, size_t length)
 {
     if (length == -1)
         length = strlen(string); // Null-terminated.
