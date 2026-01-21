@@ -8,8 +8,5 @@ struct ListNode
 };
 
 template<typename T>
-ListNode<T>::ListNode()
-{
-    // Let default constructor for T run.
-    next = nullptr;
-}
+ListNode<T>::ListNode() :
+    next(nullptr) {} // Let default constructor for T run.
