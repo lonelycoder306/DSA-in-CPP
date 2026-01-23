@@ -1,42 +1,65 @@
 #include "../include/linearTable.h"
-#include <iostream>
 #include <chrono>
+#include <iostream>
+
+static const char* names[] = {
+    "Alice",
+    "Bob",
+    "John",
+    "Maddy"
+};
+
+// Random hash function for testing.
+struct charHash
+{
+    Hash operator()(const char* str)
+    {
+        uint32_t hash = 5381;
+        int c;
+
+        while ((c = *str++))
+            hash = ((hash << 5) + hash) + c;
+
+        return hash;
+    }
+};
 
 int main()
 {
-    linearTable<char, int> table;
-    for (int i = 1; i < 11; i++)
+    linearTable<const char *, int, charHash> chartable;
+
+    for (int i = 1; i < 5; i++)
     {
-        table.add((char) (i + 64), i * 2);
-        std::cout << "Added " << (char) (i + 64) << ".\n";
+        chartable[names[i - 1]] = i;
+        std::cout << "Added " << names[i - 1] << ".\n";
     }
 
-    std::cout << "Size: " << table.size() << '\n';
-    for (int i = 1; i < 11; i++)
-        std::cout << *table.get((char)(i + 64)) << '\n';
+    std::cout << "Size: " << chartable.size() << '\n';
+    for (int i = 1; i < 5; i++)
+        std::cout << chartable[names[i - 1]] << '\n';
 
-    table.add((char) 65, 24);
-    std::cout << (char) 65 << ":" << *table.get((char) 65) << '\n';
-    table.remove((char) 65);
-    if (table.get((char) 65) == nullptr)
+    chartable["Mary"] = 12;
+    std::cout << chartable["Mary"] << '\n';
+    chartable.remove("Mary");
+    if (chartable.get("Mary") == nullptr)
         std::cout << "Removed key successfully.\n";
 
     using namespace std::chrono;
 
-    linearTable<int, int> table2;
+    linearTable<int, int> table;
     auto start = high_resolution_clock::now();
     for (int i = 0; i < 500; i++)
-        table2.add(i, i + 1);
+        table[i] = i + 1;
+    
+    for (int i = 0; i < 500; i++)
+        std::cout << *table.get(i) << '\n';
 
     for (int i = 0; i < 500; i++)
-        std::cout << *table2.get(i) << '\n';
-
-    for (int i = 0; i < 500; i++)
-        table2.remove(i);
+        table.remove(i);
 
     auto finish = high_resolution_clock::now();
     auto time = duration_cast<milliseconds>(finish - start);
-    std::cout << "Time: " << (long double)time.count() / 1000 << '\n';
+    std::cout << "Time: " << (long double) time.count() / 1000 << '\n';
 
     return 0;
 }

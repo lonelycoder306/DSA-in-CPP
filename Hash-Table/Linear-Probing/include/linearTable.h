@@ -12,13 +12,29 @@
 #include <cstdint>
 #include <iostream> // For debugging.
 
-#define KVTEMP template<typename Key, typename Value>
-#define EKV Entry<Key, Value>
+#define KVHTEMP             template<typename Key, typename Value, typename HashFunc>
+#define KVHTEMP_DEFAULT     template<typename Key, typename Value, typename HashFunc = Hasher<Key>>
+#define EKV                 Entry<Key, Value>
 
-KVTEMP
+template<typename Key>
+struct Hasher
+{
+    Hash operator()(Key key)
+    {
+        return hashKey(key);
+    }
+
+    Hash operator()(Key key, size_t size)
+    {
+        return hashKey(key, size);
+    }
+};
+
+KVHTEMP_DEFAULT
 class linearTable
 {
     private:
+        HashFunc getHash;
         // Keeping the same load factor for 
         // both implementations.
         static constexpr double loadFactor = 0.8;
@@ -34,51 +50,63 @@ class linearTable
         // Returns reference to available bucket
         // if not found.
         EKV& findSlot(Key key, int* pos);
+        // Adds a key with no value.
+        EKV& emptyAdd(Key key);
     
     public:
         linearTable();
-        linearTable(const linearTable<Key, Value>& other);
+        linearTable(const linearTable<Key, Value, HashFunc>& other);
         ~linearTable() = default;
-        linearTable<Key, Value>& operator=(const linearTable<Key, Value>& other);
+        linearTable<Key, Value, HashFunc>& operator=
+        (const linearTable<Key, Value, HashFunc>& other);
         Value& operator[](Key key);
 
         void add(Key key, Value value);
         Value* get(Key key);
         void set(Key key, Value value);
         void remove(Key key);
-        void merge(const linearTable<Key, Value>& other);
+        void merge(const linearTable<Key, Value, HashFunc>& other);
         int size();
 
         // For debugging.
         void printTable();
 };
 
-KVTEMP
-linearTable<Key, Value>::linearTable() :
-    entries(2), count(0), maxIndex(-1) {}
+KVHTEMP
+linearTable<Key, Value, HashFunc>::linearTable() :
+    getHash(HashFunc()), entries(2), count(0), maxIndex(-1) {}
 
-KVTEMP
-linearTable<Key, Value>::linearTable(const linearTable<Key, Value>& other) :
+KVHTEMP
+linearTable<Key, Value, HashFunc>::linearTable(const linearTable<Key, Value, HashFunc>& other) :
     entries(other.entries), count(other.count),
     maxIndex(other.maxIndex) {}
 
-KVTEMP
-linearTable<Key, Value>::linearTable(int size) :
-    entries(size), count(0), maxIndex(-1) {}
+KVHTEMP
+linearTable<Key, Value, HashFunc>::linearTable(int size) :
+    getHash(HashFunc()), entries(size), count(0), maxIndex(-1) {}
 
-KVTEMP
-linearTable<Key, Value>& linearTable<Key, Value>::
-operator=(const linearTable<Key, Value>& other)
+KVHTEMP
+linearTable<Key, Value, HashFunc>& linearTable<Key, Value, HashFunc>::
+operator=(const linearTable<Key, Value, HashFunc>& other)
 {
     this->entries = other.entries;
     return *this;
 }
 
-KVTEMP
-void linearTable<Key, Value>::reorder()
+KVHTEMP
+Value& linearTable<Key, Value, HashFunc>::operator[](Key key)
+{
+    EKV& existEntry = findSlot(key, nullptr);
+    if (existEntry.state == VALID) // Key already exists.
+        return existEntry.value;
+    return emptyAdd(key).value;
+}
+
+KVHTEMP
+void linearTable<Key, Value, HashFunc>::reorder()
 {
     size_t capacity = entries.capacity();
-    linearTable<Key, Value> newTable(static_cast<int>(capacity));
+    linearTable<Key, Value, HashFunc> newTable(static_cast<int>(capacity));
     for (size_t i = 0; i < maxIndex + 1; i++)
     {
         EKV entry = entries.slot((int) i);
@@ -91,8 +119,8 @@ void linearTable<Key, Value>::reorder()
     this->maxIndex = newTable.maxIndex;
 }
 
-KVTEMP
-void linearTable<Key, Value>::resize()
+KVHTEMP
+void linearTable<Key, Value, HashFunc>::resize()
 {   
     if ((entries.capacity() * loadFactor) < count + 1)
     {
@@ -106,10 +134,10 @@ void linearTable<Key, Value>::resize()
     }
 }
 
-KVTEMP
-EKV& linearTable<Key, Value>::findSlot(Key key, int* pos)
+KVHTEMP
+EKV& linearTable<Key, Value, HashFunc>::findSlot(Key key, int* pos)
 {
-    uint32_t hash = hashKey(key);
+    uint32_t hash = getHash(key);
     uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
     int index = (int) (hash & bitmask);
 
@@ -141,8 +169,32 @@ EKV& linearTable<Key, Value>::findSlot(Key key, int* pos)
     return (tombstone == nullptr ? *entry : *tombstone);
 }
 
-KVTEMP
-void linearTable<Key, Value>::add(Key key, Value value)
+KVHTEMP
+EKV& linearTable<Key, Value, HashFunc>::emptyAdd(Key key)
+{
+    // This method is only called internally,
+    // so we can skip checks for the key existing
+    // while being careful to use the method properly.
+    
+    resize(); // Grow if needed.
+
+    uint32_t hash = getHash(key);
+    int index;
+    EKV& newEntry = findSlot(key, &index);
+
+    if (newEntry.state != TOMBSTONE)
+        count++;
+
+    newEntry.key = key;
+    newEntry.hash = hash;
+    newEntry.state = VALID;
+
+    maxIndex = (maxIndex > index ? maxIndex : index);
+    return newEntry;
+}
+
+KVHTEMP
+void linearTable<Key, Value, HashFunc>::add(Key key, Value value)
 {
     EKV& existEntry = findSlot(key, nullptr);
     if (existEntry.state == VALID) // Key already exists.
@@ -153,7 +205,7 @@ void linearTable<Key, Value>::add(Key key, Value value)
 
     resize(); // Grow size if needed.
 
-    uint32_t hash = hashKey(key);
+    uint32_t hash = getHash(key);
     int index;
     EKV& newEntry = findSlot(key, &index);
 
@@ -168,8 +220,8 @@ void linearTable<Key, Value>::add(Key key, Value value)
     maxIndex = (maxIndex > index ? maxIndex : index);
 }
 
-KVTEMP
-Value* linearTable<Key, Value>::get(Key key)
+KVHTEMP
+Value* linearTable<Key, Value, HashFunc>::get(Key key)
 {
     if (count == 0) return nullptr;
     
@@ -180,8 +232,8 @@ Value* linearTable<Key, Value>::get(Key key)
         return &(entry.value);
 }
 
-KVTEMP
-void linearTable<Key, Value>::set(Key key, Value value)
+KVHTEMP
+void linearTable<Key, Value, HashFunc>::set(Key key, Value value)
 {
     EKV& entry = findSlot(key, nullptr);
     if (entry.state != VALID)
@@ -190,16 +242,16 @@ void linearTable<Key, Value>::set(Key key, Value value)
         entry.value = value;
 }
 
-KVTEMP
-void linearTable<Key, Value>::remove(Key key)
+KVHTEMP
+void linearTable<Key, Value, HashFunc>::remove(Key key)
 {
     EKV& entry = findSlot(key, nullptr);
     if (entry.state == VALID) // Leave it if it's already empty.
         entry.state = TOMBSTONE;
 }
 
-KVTEMP
-void linearTable<Key, Value>::merge(const linearTable<Key, Value>& other)
+KVHTEMP
+void linearTable<Key, Value, HashFunc>::merge(const linearTable<Key, Value, HashFunc>& other)
 {
     size_t capacity = other.entries.capacity();
     for (size_t i = 0; i < capacity; i++)
@@ -210,14 +262,14 @@ void linearTable<Key, Value>::merge(const linearTable<Key, Value>& other)
     }
 }
 
-KVTEMP
-int linearTable<Key, Value>::size()
+KVHTEMP
+int linearTable<Key, Value, HashFunc>::size()
 {
     return count;
 }
 
-KVTEMP
-void linearTable<Key, Value>::printTable()
+KVHTEMP
+void linearTable<Key, Value, HashFunc>::printTable()
 {
     size_t cap = entries.capacity();
     for (size_t i = 0; i < cap; i++)
