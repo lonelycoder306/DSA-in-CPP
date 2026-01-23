@@ -60,7 +60,8 @@ class chainTable
         chainTable();
         chainTable(const chainTable<Key, Value, HashFunc>& other);
         ~chainTable() = default;
-        chainTable<Key, Value, HashFunc>& operator=(const chainTable<Key, Value, HashFunc>& other);
+        chainTable<Key, Value, HashFunc>& operator=
+        (const chainTable<Key, Value, HashFunc>& other);
         Value& operator[](Key key);
 
         void add(Key key, Value value);
