@@ -36,11 +36,11 @@ class Array
         // Use with care.
         inline void increaseCapacity();
 
-        void push(T element);
-        int position(T element);
-        void insert(T element, int index);
+        void push(const T& element);
+        int position(const T& element);
+        void insert(const T& element, int index);
         T erase(int index);
-        void remove(T element);
+        void remove(const T& element);
         inline T pop();
         void popn(int n);
         inline size_t count() const;
@@ -48,8 +48,8 @@ class Array
         inline T* front();
         inline T* back();
         inline T& slot(int index); // index < capacity.
-        void slotInsert(T element, int index); // index < capacity.
-        void fillArray(T element, bool capacity = false);
+        void slotInsert(const T& element, int index); // index < capacity.
+        void fillArray(const T& element, bool capacity = false);
 
         class iterator
         {
@@ -226,7 +226,7 @@ inline void Array<T>::increaseCapacity()
 }
 
 TEMP
-void Array<T>::push(T element)
+void Array<T>::push(const T& element)
 {
     if (_capacity <= _count)
         grow();
@@ -234,7 +234,7 @@ void Array<T>::push(T element)
 }
 
 TEMP
-int Array<T>::position(T element)
+int Array<T>::position(const T& element)
 {
     for (size_t i = 0; i < _count; i++)
     {
@@ -292,7 +292,7 @@ void Array<T>::shift(int shift, int start)
 }
 
 TEMP
-void Array<T>::insert(T element, int index)
+void Array<T>::insert(const T& element, int index)
 {
     if ((index < 0) || (index >= _count))
         throw std::out_of_range("Invalid index.");
@@ -321,7 +321,7 @@ T Array<T>::erase(int index)
 }
 
 TEMP
-void Array<T>::remove(T element)
+void Array<T>::remove(const T& element)
 {
     int index = position(element);
     if (index == -1)
@@ -380,7 +380,7 @@ inline T& Array<T>::slot(int index)
 }
 
 TEMP
-void Array<T>::slotInsert(T element, int index)
+void Array<T>::slotInsert(const T& element, int index)
 {
     if ((index < 0) || ((size_t) index >= _capacity))
         throw std::out_of_range("Invalid index");
@@ -394,7 +394,7 @@ void Array<T>::slotInsert(T element, int index)
 }
 
 TEMP
-void Array<T>::fillArray(T object, bool capacity)
+void Array<T>::fillArray(const T& object, bool capacity)
 {
     for (size_t i = 0; i < _count; i++)
         entries[i] = object;

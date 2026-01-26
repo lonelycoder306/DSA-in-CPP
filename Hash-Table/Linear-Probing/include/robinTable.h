@@ -38,20 +38,21 @@ class robinTable
 
         void reorder();
         void resize();
-        int findSlot(Key key);
-        inline void insertPair(Key key, Value value, Hash hash, int index);
+        int findSlot(const Key& key);
+        inline void insertPair(const Key& key, const Value& value,
+            Hash hash, int index);
     
     public:
         robinTable();
         robinTable(const robinTable<Key, Value>& other);
         ~robinTable() = default;
         robinTable<Key, Value>& operator=(const robinTable<Key, Value>& other);
-        Value& operator[](Key key);
+        Value& operator[](const Key& key);
 
-        void add(Key key, Value value);
-        Value* get(Key key);
-        void set(Key key, Value value);
-        void remove(Key key);
+        void add(const Key& key, const Value& value);
+        Value* get(const Key& key);
+        void set(const Key& key, const Value& value);
+        void remove(const Key& key);
         void merge(const robinTable<Key, Value>& other);
         size_t size();
 
@@ -137,7 +138,7 @@ void robinTable<Key, Value>::resize()
 }
 
 KVTEMP
-int robinTable<Key, Value>::findSlot(Key key)
+int robinTable<Key, Value>::findSlot(const Key& key)
 {
     Hash hash = hashKey(key);
     size_t bitmask = hashes.capacity() - 1;
@@ -165,7 +166,8 @@ int robinTable<Key, Value>::findSlot(Key key)
 }
 
 KVTEMP
-inline void robinTable<Key, Value>::insertPair(Key key, Value value, Hash hash, int index)
+inline void robinTable<Key, Value>::insertPair(const Key& key,
+    const Value& value, Hash hash, int index)
 {
     keys.slot(index) = key;
     values.slot(index) = value;
@@ -177,7 +179,7 @@ inline void robinTable<Key, Value>::insertPair(Key key, Value value, Hash hash, 
 }
 
 KVTEMP
-void robinTable<Key, Value>::add(Key key, Value value)
+void robinTable<Key, Value>::add(const Key& key, const Value& value)
 {
     int slot = findSlot(key);
     if (slot != -1)
@@ -218,7 +220,7 @@ void robinTable<Key, Value>::add(Key key, Value value)
 }
 
 KVTEMP
-Value* robinTable<Key, Value>::get(Key key)
+Value* robinTable<Key, Value>::get(const Key& key)
 {
     if (count == 0) return nullptr;
     
@@ -230,7 +232,7 @@ Value* robinTable<Key, Value>::get(Key key)
 }
 
 KVTEMP
-void robinTable<Key, Value>::set(Key key, Value value)
+void robinTable<Key, Value>::set(const Key& key, const Value& value)
 {
     int slot = findSlot(key);
     if (slot == -1)
@@ -240,7 +242,7 @@ void robinTable<Key, Value>::set(Key key, Value value)
 }
 
 KVTEMP
-void robinTable<Key, Value>::remove(Key key)
+void robinTable<Key, Value>::remove(const Key& key)
 {
     int slot = findSlot(key);
     if (slot != -1) // Leave it alone if it's empty.

@@ -37,18 +37,18 @@ class LinkedList
 
         // Add new node.
 
-        void prepend(T object);
-        void append(T object);
-        void insert(T object, int position);
+        void prepend(const T& object);
+        void append(const T& object);
+        void insert(const T& object, int position);
 
         // Find a node.
 
-        int position(T object, int start = 0) const;
+        int position(const T& object, int start = 0) const;
 
         // Remove node(s).
 
         T erase(int position);
-        void remove(T object);
+        void remove(const T& object);
         T pop();
         void popn(int n);
 
@@ -56,7 +56,7 @@ class LinkedList
 
         bool has(T object) const;
         ListNode<T>* at(int position) const;
-        ListNode<T>* get(T object) const;
+        ListNode<T>* get(const T& object) const;
 
         // Manage list.
 
@@ -70,10 +70,10 @@ class LinkedList
 
         // Check if it's sorted first.
         bool sorted(); // Will add ascending flag parameter later.
-        void sortAdd(T object);
-        int sortPosition(T object, int start = 0) const;
-        bool sortHas(T object) const;
-        void sortRemove(T object);
+        void sortAdd(const T& object);
+        int sortPosition(const T& object, int start = 0) const;
+        bool sortHas(const T& object) const;
+        void sortRemove(const T& object);
 
         // Make a copy of the list.
         template<typename U>
@@ -225,7 +225,7 @@ ListNode<T>* LinkedList<T>::back()
 }
 
 TEMP
-void LinkedList<T>::prepend(T object)
+void LinkedList<T>::prepend(const T& object)
 {
     ListNode<T>* newNode = new ListNode<T>;
     newNode->object = object;
@@ -235,7 +235,7 @@ void LinkedList<T>::prepend(T object)
 }
 
 TEMP
-void LinkedList<T>::append(T object)
+void LinkedList<T>::append(const T& object)
 {
     ListNode<T>* newNode = new ListNode<T>;
     newNode->object = object;
@@ -256,7 +256,7 @@ void LinkedList<T>::append(T object)
 }
 
 TEMP
-void LinkedList<T>::insert(T object, int position)
+void LinkedList<T>::insert(const T& object, int position)
 {
     if ((position < 0) ||
         ((position != 0) && (position >= listLength)))
@@ -294,7 +294,7 @@ void LinkedList<T>::insert(T object, int position)
 }
 
 TEMP
-int LinkedList<T>::position(T object, int start) const
+int LinkedList<T>::position(const T& object, int start) const
 {
     if ((start < 0) || (start >= listLength))
         return -1; // Put error-handling here.
@@ -349,7 +349,7 @@ T LinkedList<T>::erase(int position)
 }
 
 TEMP
-void LinkedList<T>::remove(T object)
+void LinkedList<T>::remove(const T& object)
 {
     int pos = position(object);
     if (pos != -1)
@@ -394,7 +394,7 @@ ListNode<T>* LinkedList<T>::at(int position) const
 }
 
 TEMP
-ListNode<T>* LinkedList<T>::get(T object) const
+ListNode<T>* LinkedList<T>::get(const T& object) const
 {
     int pos = position(object);
     if (pos == -1)
@@ -510,7 +510,7 @@ bool LinkedList<T>::sorted()
 }
 
 TEMP
-void LinkedList<T>::sortAdd(T object)
+void LinkedList<T>::sortAdd(const T& object)
 {
     ListNode<T>* temp = head;
     int position = 0;
@@ -528,7 +528,7 @@ void LinkedList<T>::sortAdd(T object)
 }
 
 TEMP
-int LinkedList<T>::sortPosition(T object, int start) const
+int LinkedList<T>::sortPosition(const T& object, int start) const
 {
     if ((start < 0) || (start >= listLength))
         return -1; // Throw error?
@@ -552,13 +552,13 @@ int LinkedList<T>::sortPosition(T object, int start) const
 }
 
 TEMP
-bool LinkedList<T>::sortHas(T object) const
+bool LinkedList<T>::sortHas(const T& object) const
 {
     return (sortPosition(object) != -1);
 }
 
 TEMP
-void LinkedList<T>::sortRemove(T object)
+void LinkedList<T>::sortRemove(const T& object)
 {
     int pos = sortPosition(object);
     if (pos != -1)

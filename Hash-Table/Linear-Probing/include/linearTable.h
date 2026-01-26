@@ -49,9 +49,9 @@ class linearTable
         // Searches for existing key.
         // Returns reference to available bucket
         // if not found.
-        EKV& findSlot(Key key, int* pos);
+        EKV& findSlot(const Key& key, int* pos);
         // Adds a key with no value.
-        EKV& emptyAdd(Key key);
+        EKV& emptyAdd(const Key& key);
     
     public:
         linearTable();
@@ -59,12 +59,12 @@ class linearTable
         ~linearTable() = default;
         linearTable<Key, Value, HashFunc>& operator=
         (const linearTable<Key, Value, HashFunc>& other);
-        Value& operator[](Key key);
+        Value& operator[](const Key& key);
 
-        void add(Key key, Value value);
-        Value* get(Key key);
-        void set(Key key, Value value);
-        void remove(Key key);
+        void add(const Key& key, const Value& value);
+        Value* get(const Key& key);
+        void set(const Key& key, const Value& value);
+        void remove(const Key& key);
         void merge(const linearTable<Key, Value, HashFunc>& other);
         int size();
 
@@ -94,7 +94,7 @@ operator=(const linearTable<Key, Value, HashFunc>& other)
 }
 
 KVHTEMP
-Value& linearTable<Key, Value, HashFunc>::operator[](Key key)
+Value& linearTable<Key, Value, HashFunc>::operator[](const Key& key)
 {
     EKV& existEntry = findSlot(key, nullptr);
     if (existEntry.state == VALID) // Key already exists.
@@ -135,7 +135,7 @@ void linearTable<Key, Value, HashFunc>::resize()
 }
 
 KVHTEMP
-EKV& linearTable<Key, Value, HashFunc>::findSlot(Key key, int* pos)
+EKV& linearTable<Key, Value, HashFunc>::findSlot(const Key& key, int* pos)
 {
     uint32_t hash = getHash(key);
     uint32_t bitmask = (uint32_t) (entries.capacity() - 1);
@@ -170,7 +170,7 @@ EKV& linearTable<Key, Value, HashFunc>::findSlot(Key key, int* pos)
 }
 
 KVHTEMP
-EKV& linearTable<Key, Value, HashFunc>::emptyAdd(Key key)
+EKV& linearTable<Key, Value, HashFunc>::emptyAdd(const Key& key)
 {
     // This method is only called internally,
     // so we can skip checks for the key existing
@@ -194,7 +194,8 @@ EKV& linearTable<Key, Value, HashFunc>::emptyAdd(Key key)
 }
 
 KVHTEMP
-void linearTable<Key, Value, HashFunc>::add(Key key, Value value)
+void linearTable<Key, Value, HashFunc>::add(const Key& key,
+    const Value& value)
 {
     EKV& existEntry = findSlot(key, nullptr);
     if (existEntry.state == VALID) // Key already exists.
@@ -221,7 +222,7 @@ void linearTable<Key, Value, HashFunc>::add(Key key, Value value)
 }
 
 KVHTEMP
-Value* linearTable<Key, Value, HashFunc>::get(Key key)
+Value* linearTable<Key, Value, HashFunc>::get(const Key& key)
 {
     if (count == 0) return nullptr;
     
@@ -233,7 +234,8 @@ Value* linearTable<Key, Value, HashFunc>::get(Key key)
 }
 
 KVHTEMP
-void linearTable<Key, Value, HashFunc>::set(Key key, Value value)
+void linearTable<Key, Value, HashFunc>::set(const Key& key,
+    const Value& value)
 {
     EKV& entry = findSlot(key, nullptr);
     if (entry.state != VALID)
@@ -243,7 +245,7 @@ void linearTable<Key, Value, HashFunc>::set(Key key, Value value)
 }
 
 KVHTEMP
-void linearTable<Key, Value, HashFunc>::remove(Key key)
+void linearTable<Key, Value, HashFunc>::remove(const Key& key)
 {
     EKV& entry = findSlot(key, nullptr);
     if (entry.state == VALID) // Leave it if it's already empty.

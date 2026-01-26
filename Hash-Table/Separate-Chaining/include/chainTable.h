@@ -53,8 +53,8 @@ class chainTable
         void reorder();
         void resize();
         // Adds a key with no value.
-        EKV& emptyAdd(Key key);
-        EKV* getEntry(Key key);
+        EKV& emptyAdd(const Key& key);
+        EKV* getEntry(const Key& key);
     
     public:
         chainTable();
@@ -62,12 +62,12 @@ class chainTable
         ~chainTable() = default;
         chainTable<Key, Value, HashFunc>& operator=
         (const chainTable<Key, Value, HashFunc>& other);
-        Value& operator[](Key key);
+        Value& operator[](const Key& key);
 
-        void add(Key key, Value value);
-        Value* get(Key key);
-        void set(Key key, Value value);
-        void remove(Key key);
+        void add(const Key& key, const Value& value);
+        Value* get(const Key& key);
+        void set(const Key& key, const Value& value);
+        void remove(const Key& key);
         void merge(const chainTable<Key, Value, HashFunc>& other);
 
         int bucketSize();
@@ -217,7 +217,7 @@ chainTable<Key, Value, HashFunc>& chainTable<Key, Value, HashFunc>
 }
 
 KVHTEMP
-EKV& chainTable<Key, Value, HashFunc>::emptyAdd(Key key)
+EKV& chainTable<Key, Value, HashFunc>::emptyAdd(const Key& key)
 {
     // This method is only called internally,
     // so we can skip checks for the key existing
@@ -242,7 +242,7 @@ EKV& chainTable<Key, Value, HashFunc>::emptyAdd(Key key)
 }
 
 KVHTEMP
-Value& chainTable<Key, Value, HashFunc>::operator[](Key key)
+Value& chainTable<Key, Value, HashFunc>::operator[](const Key& key)
 {
     EKV* entry = getEntry(key);
     if (entry == nullptr)
@@ -294,7 +294,7 @@ void chainTable<Key, Value, HashFunc>::resize()
 }
 
 KVHTEMP
-EKV* chainTable<Key, Value, HashFunc>::getEntry(Key key)
+EKV* chainTable<Key, Value, HashFunc>::getEntry(const Key& key)
 {
     if (entryCount == 0)
         return nullptr;
@@ -314,7 +314,8 @@ EKV* chainTable<Key, Value, HashFunc>::getEntry(Key key)
 }
 
 KVHTEMP
-void chainTable<Key, Value, HashFunc>::add(Key key, Value value)
+void chainTable<Key, Value, HashFunc>::add(const Key& key,
+    const Value& value)
 {
     EKV* temp = getEntry(key);
     if (temp != nullptr) // Key already exists.
@@ -341,7 +342,7 @@ void chainTable<Key, Value, HashFunc>::add(Key key, Value value)
 }
 
 KVHTEMP
-Value* chainTable<Key, Value, HashFunc>::get(Key key)
+Value* chainTable<Key, Value, HashFunc>::get(const Key& key)
 {
     EKV* entry = getEntry(key);
     if (entry == nullptr)
@@ -351,7 +352,8 @@ Value* chainTable<Key, Value, HashFunc>::get(Key key)
 }
 
 KVHTEMP
-void chainTable<Key, Value, HashFunc>::set(Key key, Value value)
+void chainTable<Key, Value, HashFunc>::set(const Key& key,
+    const Value& value)
 {
     EKV* entry = getEntry(key);
 
@@ -362,7 +364,7 @@ void chainTable<Key, Value, HashFunc>::set(Key key, Value value)
 }
 
 KVHTEMP
-void chainTable<Key, Value, HashFunc>::remove(Key key)
+void chainTable<Key, Value, HashFunc>::remove(const Key& key)
 {
     if (entryCount == 0)
         return;
