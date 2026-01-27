@@ -5,10 +5,10 @@
 #include <iostream>
 
 #ifndef SIZE
-    #define SIZE 1000
+    #define SIZE 10000
 #endif
 
-#include "insertion.h"
+#include "count.h"
 
 template<typename T>
 bool isSorted(T* nums, int count)
