@@ -6,9 +6,9 @@
 */
 
 #pragma once
-#include "../../../Dynamic-Array/include/array.h"
-#include "../../General/entryStruct.h"
-#include "../../General/hashFunctions.h"
+#include "../Array/array.h"
+#include "entryStruct.h"
+#include "hashFunctions.h"
 #include <cstdint>
 #include <iostream> // For debugging.
 

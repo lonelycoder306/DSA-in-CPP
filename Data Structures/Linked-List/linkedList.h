@@ -1,5 +1,5 @@
 #pragma once
-#include "../../General/list.h"
+#include "list.h"
 #include <stdexcept>
 
 #define TEMP template<typename T>
