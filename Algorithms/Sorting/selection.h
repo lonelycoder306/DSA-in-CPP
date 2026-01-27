@@ -1,3 +1,5 @@
+#ifdef SELECTION
+
 template<typename T>
 static inline int findMin(T* elems, int start, int count)
 {
@@ -29,3 +31,5 @@ inline void sort(T* elems, int count)
         }
     }
 }
+
+#endif

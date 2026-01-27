@@ -1,3 +1,5 @@
+#ifdef BINARY
+
 template<typename T>
 int search(T* elems, int count, T find)
 {
@@ -16,3 +18,5 @@ int search(T* elems, int count, T find)
 
     return -1;
 }
+
+#endif

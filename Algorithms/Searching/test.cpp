@@ -8,8 +8,12 @@
     #define SIZE 10'000'000
 #endif
 
-#include "../Sorting/insertion.h"
+#ifndef SEARCH
+    #define search() 0
+#endif
+
 #include "binary.h"
+#include "linear.h"
 
 template<typename T>
 bool isSorted(T* nums, int count)
@@ -45,7 +49,7 @@ int main()
     int elem = nums[rand() % SIZE];
 
     auto start = clock::now();
-    volatile int index = search<int>(nums, SIZE, elem);
+    volatile int index = search(nums, SIZE, elem);
     auto finish = clock::now();
 
     if (isSorted(nums, SIZE))

@@ -8,7 +8,17 @@
     #define SIZE 10000
 #endif
 
+#ifndef SORT
+    #define sort()
+#endif
+
+#include "bubble.h"
 #include "count.h"
+#include "insertion.h"
+#include "merge.h"
+#include "quick.h"
+#include "radix.h"
+#include "selection.h"
 
 template<typename T>
 bool isSorted(T* nums, int count)
@@ -42,7 +52,7 @@ int main()
         nums[i] = rand() % 1000 + 1;
 
     auto start = clock::now();
-    sort<int>(nums, SIZE);
+    sort(nums, SIZE);
     auto finish = clock::now();
 
     if (isSorted(nums, SIZE))

@@ -1,3 +1,5 @@
+#ifdef COUNT
+
 template<typename T>
 int range(T* elems, int count, T& min)
 {
@@ -37,3 +39,5 @@ inline void sort(T*& elems, int count)
     delete[] elems;
     elems = newElems;
 }
+
+#endif

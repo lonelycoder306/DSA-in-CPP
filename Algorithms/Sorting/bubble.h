@@ -1,3 +1,5 @@
+#ifdef BUBBLE
+
 template<typename T>
 inline void sort(T* elems, int count)
 {
@@ -17,3 +19,5 @@ inline void sort(T* elems, int count)
         }
     }
 }
+
+#endif

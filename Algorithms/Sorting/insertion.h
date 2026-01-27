@@ -1,3 +1,5 @@
+#ifdef INSERTION
+
 template<typename T>
 static inline void insert(T* elems, int start, int index)
 {
@@ -19,3 +21,5 @@ inline void sort(T* elems, int count)
         insert(elems, j + 1, i);
     }
 }
+
+#endif
