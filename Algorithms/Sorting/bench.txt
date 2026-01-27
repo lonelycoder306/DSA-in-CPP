@@ -1,0 +1,25 @@
+5 attempts, taking the median.
+
+Sorting 1000 random numbers (no optimization):
+Bubble -    0.0042743870
+Selection - 0.0019205650
+Insertion - 0.0000869900
+Count -     0.0000252000
+
+Sorting 10,000 random numbers (no optimization):
+Bubble -    0.3223375160
+Selection - 0.1405731080
+Insertion - 0.0013321000
+Count -     0.0001479000
+
+Sorting 1000 random numbers (-O2):
+Bubble -    0.0014741010
+Selection - 0.0004631000
+Insertion - 0.0000220000
+Count -     0.0000092000
+
+Sorting 10,000 random numbers (-O2):
+Bubble -    0.1642682900
+Selection - 0.0427301020
+Insertion - 0.0002445000
+Count -     0.0000550000

@@ -4,3 +4,4 @@ Hash-Table/Separate-Chaining/VS Solution/*
 Hash-Table/Linear-Probing/VS Solution/*
 .vscode/*
 *.txt
+!Algorithms/*/*.txt

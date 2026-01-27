@@ -1,0 +1,9 @@
+5 attempts, taking the median.
+
+Searching 1,000,000 random numbers:
+Linear - 0.0002252000
+Binary - 0.0000017000
+
+Searching 10,000,000 random numbers:
+Linear - 0.0174863000
+Binary - 0.0000030000
