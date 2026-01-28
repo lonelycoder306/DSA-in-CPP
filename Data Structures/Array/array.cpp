@@ -1,4 +1,4 @@
-#include "../include/array.h"
+#include "array.h"
 #include <iostream>
 
 int main()
