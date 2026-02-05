@@ -20,7 +20,6 @@ class LinkedList
         SortCase isSorted;
 
         void swap(ListNode<T>* first, ListNode<T>* second);
-        void clear();
     
     public:
         LinkedList();
@@ -30,10 +29,13 @@ class LinkedList
         LinkedList& operator=(LinkedList<T>&& other);
         ~LinkedList();
 
+        bool operator==(const LinkedList<T>& other);
+
         int length();
         ListNode<T>* front();
         // Returns pointer to last node.
         ListNode<T>* back();
+        void clear(void (*func)(T obj));
 
         // Add new node.
 
@@ -127,13 +129,14 @@ LinkedList<T>::LinkedList() :
     isSorted(INVALID) {}
 
 TEMP
-void LinkedList<T>::clear()
+void LinkedList<T>::clear(void (*func)(T obj))
 {
     ListNode<T>* current = head;
     ListNode<T>* temp = nullptr;
     while (current != nullptr)
     {
         temp = current;
+        if (func != nullptr) (*func)(temp->object);
         current = current->next;
         delete temp;
     }
@@ -200,7 +203,26 @@ LinkedList<T>& LinkedList<T>::operator=(LinkedList<T>&& other)
 TEMP
 LinkedList<T>::~LinkedList()
 {
-    this->clear();
+    this->clear(nullptr);
+}
+
+TEMP
+bool LinkedList<T>::operator==(const LinkedList<T>& other)
+{
+    if (this->listLength != other.listLength) return false;
+
+    ListNode<T>* thisTemp = this->head;
+    ListNode<T>* otherTemp = other.head;
+
+    while ((thisTemp != nullptr)/* && (otherTemp != nullptr)*/)
+    {
+        if (thisTemp->object != otherTemp->object)
+            return false;
+        thisTemp = thisTemp->next;
+        otherTemp = otherTemp->next;
+    }
+
+    return true;
 }
 
 TEMP
