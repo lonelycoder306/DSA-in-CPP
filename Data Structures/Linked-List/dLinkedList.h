@@ -28,44 +28,44 @@ class DoubleLinkedList
     
     public:
         DLL();
-        DLL(const DLL<T>& other);
-        DLL<T>& operator=(const DLL<T>& other);
-        DLL(DLL<T>&& other);
-        DLL<T>& operator=(DLL<T>&& other);
+        DLL(const DLL& other);
+        DLL<T>& operator=(const DLL& other);
+        DLL(DLL&& other);
+        DLL<T>& operator=(DLL&& other);
         ~DLL();
 
-        int length();
+        size_t length();
         ListNode<T>* front();
         // Returns pointer to last node.
         ListNode<T>* back();
 
         // Add new node.
 
-        void prepend(T object);
-        void append(T object);
-        void insert(T object, int position);
+        void prepend(const T& object);
+        void append(const T& object);
+        void insert(const T& object, size_t position);
 
         // Find a node.
 
-        int position(T object, int start = 0) const;
+        int position(const T& object, size_t start = 0) const;
 
         // Remove node(s).
 
-        T erase(int position);
-        void remove(T object);
+        T erase(size_t position);
+        void remove(const T& object);
         T pop();
-        void popn(int n);
+        void popn(size_t n);
 
         // Check for and retrieve nodes.
 
-        bool has(T object) const;
-        ListNode<T>* at(int position) const;
-        ListNode<T>* get(T object) const;
+        bool has(const T& object) const;
+        ListNode<T>* at(size_t position) const;
+        ListNode<T>* get(const T& object) const;
 
         // Manage list.
 
         void sort(bool ascending = true);
-        void merge(const DLL<T>& other);
+        void merge(const DLL& other);
 
         // Manage sorted list.
         // All methods (except sorted()) will
@@ -74,10 +74,10 @@ class DoubleLinkedList
 
         // Check if it's sorted first.
         bool sorted(); // Will add ascending flag parameter later.
-        void sortAdd(T object);
-        int sortPosition(T object, int start = 0) const;
-        bool sortHas(T object) const;
-        void sortRemove(T object);
+        void sortAdd(const T& object);
+        int sortPosition(const T& object, size_t start = 0) const;
+        bool sortHas(const T& object) const;
+        void sortRemove(const T& object);
 
         // Make a copy of the list.
         friend DLL<T> copy(const DLL<T>& list);
@@ -118,4 +118,3 @@ DLL<T>::DLL(const DLL<T>& other)
     // this->listLength = other.listLength;
     this->isSorted = other.isSorted;
 }
-

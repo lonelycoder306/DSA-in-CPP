@@ -1,5 +1,6 @@
 #pragma once
 #include "list.h"
+#include <cstdint>
 #include <stdexcept>
 
 #define TEMP template<typename T>
@@ -16,22 +17,22 @@ class LinkedList
 {
     private:
         ListNode<T>* head;
-        int listLength;
+        size_t listLength;
         SortCase isSorted;
 
         void swap(ListNode<T>* first, ListNode<T>* second);
     
     public:
         LinkedList();
-        LinkedList(const LinkedList<T>& other);
-        LinkedList& operator=(const LinkedList<T>& other);
-        LinkedList(LinkedList<T>&& other);
-        LinkedList& operator=(LinkedList<T>&& other);
+        LinkedList(const LinkedList& other);
+        LinkedList& operator=(const LinkedList& other);
+        LinkedList(LinkedList&& other);
+        LinkedList& operator=(LinkedList&& other);
         ~LinkedList();
 
-        bool operator==(const LinkedList<T>& other);
+        bool operator==(const LinkedList& other);
 
-        int length();
+        size_t length();
         ListNode<T>* front();
         // Returns pointer to last node.
         ListNode<T>* back();
@@ -41,29 +42,29 @@ class LinkedList
 
         void prepend(const T& object);
         void append(const T& object);
-        void insert(const T& object, int position);
+        void insert(const T& object, size_t position);
 
         // Find a node.
 
-        int position(const T& object, int start = 0) const;
+        size_t position(const T& object, size_t start = 0) const;
 
         // Remove node(s).
 
-        T erase(int position);
+        T erase(size_t position);
         void remove(const T& object);
         T pop();
-        void popn(int n);
+        void popn(size_t n);
 
         // Check for and retrieve nodes.
 
         bool has(T object) const;
-        ListNode<T>* at(int position) const;
+        ListNode<T>* at(size_t position) const;
         ListNode<T>* get(const T& object) const;
 
         // Manage list.
 
         void sort(bool ascending = true);
-        void merge(const LinkedList<T>& other);
+        void merge(const LinkedList& other);
 
         // Manage sorted list.
         // All methods (except sorted()) will
@@ -73,7 +74,7 @@ class LinkedList
         // Check if it's sorted first.
         bool sorted(); // Will add ascending flag parameter later.
         void sortAdd(const T& object);
-        int sortPosition(const T& object, int start = 0) const;
+        size_t sortPosition(const T& object, size_t start = 0) const;
         bool sortHas(const T& object) const;
         void sortRemove(const T& object);
 
@@ -226,7 +227,7 @@ bool LinkedList<T>::operator==(const LinkedList<T>& other)
 }
 
 TEMP
-int LinkedList<T>::length()
+size_t LinkedList<T>::length()
 {
     return listLength;
 }
@@ -278,11 +279,10 @@ void LinkedList<T>::append(const T& object)
 }
 
 TEMP
-void LinkedList<T>::insert(const T& object, int position)
+void LinkedList<T>::insert(const T& object, size_t position)
 {
-    if ((position < 0) ||
-        ((position != 0) && (position >= listLength)))
-            return; // Put error-handling here.
+    if ((position != 0) && (position >= listLength))
+        return; // Put error-handling here.
 
     // We will allow the user to use insert
     // on position 0 for an empty list.
@@ -316,10 +316,10 @@ void LinkedList<T>::insert(const T& object, int position)
 }
 
 TEMP
-int LinkedList<T>::position(const T& object, int start) const
+size_t LinkedList<T>::position(const T& object, size_t start) const
 {
-    if ((start < 0) || (start >= listLength))
-        return -1; // Put error-handling here.
+    if (start >= listLength)
+        return SIZE_MAX; // Put error-handling here.
 
     ListNode<T>* temp = head;
     for (int i = 0; i < start; i++)
@@ -339,9 +339,9 @@ int LinkedList<T>::position(const T& object, int start) const
 }
 
 TEMP
-T LinkedList<T>::erase(int position)
+T LinkedList<T>::erase(size_t position)
 {
-    if ((position < 0) || (position >= listLength))
+    if (position >= listLength)
         throw std::out_of_range("Invalid position value.");
     
     // Pointer to element before the one we want.
@@ -374,7 +374,7 @@ TEMP
 void LinkedList<T>::remove(const T& object)
 {
     int pos = position(object);
-    if (pos != -1)
+    if (pos != SIZE_MAX)
         erase(pos);
 }
 
@@ -387,7 +387,7 @@ T LinkedList<T>::pop()
 }
 
 TEMP
-void LinkedList<T>::popn(int n)
+void LinkedList<T>::popn(size_t n)
 {
     while (n > 0)
     {
@@ -399,13 +399,13 @@ void LinkedList<T>::popn(int n)
 TEMP
 bool LinkedList<T>::has(T object) const
 {
-    return (position(object) != -1);
+    return (position(object) != SIZE_MAX);
 }
 
 TEMP
-ListNode<T>* LinkedList<T>::at(int position) const
+ListNode<T>* LinkedList<T>::at(size_t position) const
 {
-    if ((position < 0) || (position >= listLength))
+    if (position >= listLength)
         return nullptr; // Put error-handling here.
     
     ListNode<T>* temp = head;
@@ -419,7 +419,7 @@ TEMP
 ListNode<T>* LinkedList<T>::get(const T& object) const
 {
     int pos = position(object);
-    if (pos == -1)
+    if (pos == SIZE_MAX)
         return nullptr;
     
     return this->at(pos);
@@ -550,10 +550,10 @@ void LinkedList<T>::sortAdd(const T& object)
 }
 
 TEMP
-int LinkedList<T>::sortPosition(const T& object, int start) const
+size_t LinkedList<T>::sortPosition(const T& object, size_t start) const
 {
-    if ((start < 0) || (start >= listLength))
-        return -1; // Throw error?
+    if (start >= listLength)
+        return SIZE_MAX; // Throw error?
     
     ListNode<T>* temp = head;
     for (int i = 0; i < start; i++)
@@ -576,14 +576,14 @@ int LinkedList<T>::sortPosition(const T& object, int start) const
 TEMP
 bool LinkedList<T>::sortHas(const T& object) const
 {
-    return (sortPosition(object) != -1);
+    return (sortPosition(object) != SIZE_MAX);
 }
 
 TEMP
 void LinkedList<T>::sortRemove(const T& object)
 {
     int pos = sortPosition(object);
-    if (pos != -1)
+    if (pos != SIZE_MAX)
         erase(pos);
 }
 

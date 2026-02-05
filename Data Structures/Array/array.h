@@ -12,21 +12,21 @@ class Array
         size_t _count;
         size_t _capacity;
 
-        void shift(int shift, int start = 0);
+        void shift(int shift, size_t start = 0);
 
     public:
         // Constructing Array objects.
         Array();
-        Array(int size);
-        Array(const Array<T>& other);
-        Array(Array<T>&& other);
-        Array& operator=(const Array<T>& other);
-        Array& operator=(Array<T>&& other);
+        Array(size_t size);
+        Array(const Array& other);
+        Array(Array&& other);
+        Array& operator=(const Array& other);
+        Array& operator=(Array&& other);
         ~Array();
 
         // Basic operators.
-        inline T& operator[](int index); // index < count.
-        bool operator==(const Array<T>& other);
+        inline T& operator[](size_t index); // index < count.
+        bool operator==(const Array& other);
 
         // Utility.
         void grow();
@@ -38,17 +38,17 @@ class Array
 
         void push(const T& element);
         int position(const T& element);
-        void insert(const T& element, int index);
-        T erase(int index);
+        void insert(const T& element, size_t index);
+        T erase(size_t index);
         void remove(const T& element);
         inline T pop();
-        void popn(int n);
+        inline void popn(size_t n);
         inline size_t count() const;
         inline size_t capacity() const;
         inline T* front();
         inline T* back();
-        inline T& slot(int index); // index < capacity.
-        void slotInsert(const T& element, int index); // index < capacity.
+        inline T& slot(size_t index); // index < capacity.
+        void slotInsert(const T& element, size_t index); // index < capacity.
         void fillArray(const T& element, bool capacity = false);
 
         class iterator
@@ -105,34 +105,27 @@ Array<T>::Array() :
     _capacity(0) {}
 
 TEMP
-Array<T>::Array(int size)
+Array<T>::Array(size_t size)
 {
-    if (size < 0)
-        throw std::out_of_range("Negative size cannot be used.");
     entries = new T[size];
     _count = 0; // No elements used at time of construction.
-    _capacity = static_cast<size_t>(size);
+    _capacity = size;
 }
 
 TEMP
-Array<T>::Array(const Array<T>& other)
+Array<T>::Array(const Array<T>& other) :
+    entries(new T[other._capacity]), _count(other._count),
+    _capacity(other._capacity)
 {
-    this->entries = new T[other._capacity];
-
     for (size_t i = 0; i < other._capacity; i++)
         this->entries[i] = other.entries[i];
-
-    this->_count = other._count;
-    this->_capacity = other._capacity;
 }
 
 TEMP
-Array<T>::Array(Array<T>&& other)
+Array<T>::Array(Array<T>&& other) :
+    entries(other._entries), _count(other._count),
+    _capacity(other._capacity)
 {
-    this->entries = other.entries;
-    this->_count = other._count;
-    this->_capacity = other._capacity;
-
     other.entries = nullptr;
     other._count = 0;
     other._capacity = 0;
@@ -184,10 +177,10 @@ Array<T>::~Array()
 }
 
 TEMP
-inline T& Array<T>::operator[](int index)
+inline T& Array<T>::operator[](size_t index)
 {
-    if ((index < 0) || ((size_t) index >= _count))
-        throw std::out_of_range("Invalid index.");
+    if (index >= _count)
+        throw std::out_of_range("Index out of range.");
 
     return entries[index];
 }
@@ -211,7 +204,7 @@ void Array<T>::grow()
 {
     _capacity = (_capacity == 0 ? 8 : _capacity * 2);
     T* newEntries = new T[_capacity];
-    for (int i = 0; i < (int) _count; i++)
+    for (size_t i = 0; i < _count; i++)
         newEntries[i] = std::move(entries[i]);
     delete[] entries;
     this->entries = newEntries;
@@ -230,7 +223,7 @@ void Array<T>::push(const T& element)
 {
     if (_capacity <= _count)
         grow();
-    entries[(int) _count++] = element;
+    entries[_count++] = element;
 }
 
 TEMP
@@ -250,7 +243,7 @@ int Array<T>::position(const T& element)
 // initialized immediately to maintain
 // the contiguous storage of elements in the array.
 TEMP
-void Array<T>::shift(int shift, int start)
+void Array<T>::shift(int shift, size_t start)
 {
     if ((shift == 0) || (_count == 0)) // Nothing to do.
         return;
@@ -261,10 +254,10 @@ void Array<T>::shift(int shift, int start)
     // that internally.
 
     // Can't be too negative, though.
-    if (shift < (-1 * (int) _count))
+    if (shift < (-1 * static_cast<int>(_count)))
         return; // Throw error?
 
-    if ((start < 0) || (start >= _count))
+    if (start >= _count)
         return; // Throw error?
 
     // Shift might be large, so we
@@ -292,10 +285,10 @@ void Array<T>::shift(int shift, int start)
 }
 
 TEMP
-void Array<T>::insert(const T& element, int index)
+void Array<T>::insert(const T& element, size_t index)
 {
-    if ((index < 0) || (index >= _count))
-        throw std::out_of_range("Invalid index.");
+    if (index >= _count)
+        throw std::out_of_range("Index out of range.");
     
     if (_capacity <= _count)
         grow();
@@ -306,10 +299,10 @@ void Array<T>::insert(const T& element, int index)
 }
 
 TEMP
-T Array<T>::erase(int index)
+T Array<T>::erase(size_t index)
 {
-    if ((index < 0) || (index >= _count))
-        throw std::out_of_range("Invalid index.");
+    if (index >= _count)
+        throw std::out_of_range("Index out of range.");
 
     T element = entries[index];
     // Shift begins at the index we pass to shift().
@@ -334,17 +327,13 @@ TEMP
 inline T Array<T>::pop()
 {
     _count--;
-    return entries[(int) _count];
+    return entries[_count];
 }
 
 TEMP
-void Array<T>::popn(int n)
+inline void Array<T>::popn(size_t n)
 {
-    while (n > 0)
-    {
-        pop();
-        n--;
-    }
+    _count -= n;
 }
 
 TEMP
@@ -372,18 +361,18 @@ inline T* Array<T>::back()
 }
 
 TEMP
-inline T& Array<T>::slot(int index)
+inline T& Array<T>::slot(size_t index)
 {
-    if ((index < 0) || ((size_t) index >= _capacity))
-        throw std::out_of_range("Invalid index.");
+    if (index >= _capacity)
+        throw std::out_of_range("Index out of range.");
     return entries[index];
 }
 
 TEMP
-void Array<T>::slotInsert(const T& element, int index)
+void Array<T>::slotInsert(const T& element, size_t index)
 {
-    if ((index < 0) || ((size_t) index >= _capacity))
-        throw std::out_of_range("Invalid index");
+    if (index >= _capacity)
+        throw std::out_of_range("Index out of range.");
         
     if (_capacity <= _count)
         grow();
@@ -420,7 +409,8 @@ arrIter::iterator(const arrIter& other) :
 TEMP
 typename arrIter& arrIter::operator=(const arrIter& other)
 {
-    this->ptr = other.ptr;
+    if (this != &other)
+        this->ptr = other.ptr;
     return *this;
 }
 

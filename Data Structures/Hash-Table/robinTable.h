@@ -32,28 +32,28 @@ class robinTable
         Array<Key> keys;
         Array<Value> values;
         size_t count;
-        int maxIndex;
+        size_t maxIndex;
 
         robinTable(size_t size);
 
         void reorder();
         void resize();
-        int findSlot(const Key& key);
+        size_t findSlot(const Key& key);
         inline void insertPair(const Key& key, const Value& value,
             Hash hash, int index);
     
     public:
         robinTable();
-        robinTable(const robinTable<Key, Value>& other);
+        robinTable(const robinTable& other);
         ~robinTable() = default;
-        robinTable<Key, Value>& operator=(const robinTable<Key, Value>& other);
+        robinTable& operator=(const robinTable& other);
         Value& operator[](const Key& key);
 
         void add(const Key& key, const Value& value);
         Value* get(const Key& key);
         void set(const Key& key, const Value& value);
         void remove(const Key& key);
-        void merge(const robinTable<Key, Value>& other);
+        void merge(const robinTable& other);
         size_t size();
 
         // For debugging.
@@ -63,7 +63,7 @@ class robinTable
 KVTEMP
 robinTable<Key, Value>::robinTable() :
     hashes(2), keys(2), values(2), states(2),
-    count(0), maxIndex(-1)
+    count(0), maxIndex(SIZE_MAX)
 {
     states.fillArray(EMPTY, true); // Mark every slot as empty.
 }
@@ -76,7 +76,7 @@ robinTable<Key, Value>::robinTable(const robinTable<Key, Value>& other) :
 KVTEMP
 robinTable<Key, Value>::robinTable(size_t size) :
     hashes(size), keys(size), values(size),
-    states(size), count(0), maxIndex(-1)
+    states(size), count(0), maxIndex(SIZE_MAX)
 {
     states.fillArray(EMPTY, true);
 }
@@ -138,18 +138,18 @@ void robinTable<Key, Value>::resize()
 }
 
 KVTEMP
-int robinTable<Key, Value>::findSlot(const Key& key)
+size_t robinTable<Key, Value>::findSlot(const Key& key)
 {
     Hash hash = hashKey(key);
     size_t bitmask = hashes.capacity() - 1;
-    int index = hash & bitmask;
-    int distance = 0; // Our probe distance while searching for this key.
+    size_t index = hash & bitmask;
+    size_t distance = 0; // Our probe distance while searching for this key.
 
     EntryState state = states.slot(index);
     while (state != EMPTY)
     {
-        int origSlot = hashes.slot(index) & bitmask; // Expected slot for current entry.
-        int currentDiff = index - origSlot +
+        size_t origSlot = hashes.slot(index) & bitmask; // Expected slot for current entry.
+        size_t currentDiff = index - origSlot +
             (index < origSlot ? hashes.capacity() : 0); // Probe distance for current entry.
         if (currentDiff < distance)
             break;
@@ -162,7 +162,7 @@ int robinTable<Key, Value>::findSlot(const Key& key)
         distance++;
     }
 
-    return -1;
+    return SIZE_MAX;
 }
 
 KVTEMP
@@ -175,14 +175,17 @@ inline void robinTable<Key, Value>::insertPair(const Key& key,
     if (states.slot(index) != TOMBSTONE)
         count++;
     states.slot(index) = VALID;
-    maxIndex = (index > maxIndex ? index : maxIndex);
+    if (maxIndex == SIZE_MAX)
+        maxIndex = index;
+    else
+        maxIndex = (index > maxIndex ? index : maxIndex);
 }
 
 KVTEMP
 void robinTable<Key, Value>::add(const Key& key, const Value& value)
 {
     int slot = findSlot(key);
-    if (slot != -1)
+    if (slot != SIZE_MAX)
     {
         values.slot(slot) = value;
         return;
@@ -192,8 +195,8 @@ void robinTable<Key, Value>::add(const Key& key, const Value& value)
 
     Hash hash = hashKey(key);
     size_t bitmask = hashes.capacity() - 1;
-    int index = hash & bitmask;
-    int distance = 0;
+    size_t index = hash & bitmask;
+    size_t distance = 0;
 
     while (true)
     {
@@ -203,8 +206,8 @@ void robinTable<Key, Value>::add(const Key& key, const Value& value)
             return;
         }
 
-        int origSlot = hashes.slot(index) & bitmask; // Expected slot for current entry.
-        int currentDiff = index - origSlot +
+        size_t origSlot = hashes.slot(index) & bitmask; // Expected slot for current entry.
+        size_t currentDiff = index - origSlot +
             (index < origSlot ? hashes.capacity() : 0); // Probe distance for current entry.
         if (currentDiff < distance)
         {
@@ -224,8 +227,8 @@ Value* robinTable<Key, Value>::get(const Key& key)
 {
     if (count == 0) return nullptr;
     
-    int slot = findSlot(key);
-    if (slot == -1)
+    size_t slot = findSlot(key);
+    if (slot == SIZE_MAX)
         return nullptr;
     else
         return &values.slot(slot);
@@ -234,8 +237,8 @@ Value* robinTable<Key, Value>::get(const Key& key)
 KVTEMP
 void robinTable<Key, Value>::set(const Key& key, const Value& value)
 {
-    int slot = findSlot(key);
-    if (slot == -1)
+    size_t slot = findSlot(key);
+    if (slot == SIZE_MAX)
         add(key, value);
     else
         values.slot(slot) = value;
@@ -244,8 +247,8 @@ void robinTable<Key, Value>::set(const Key& key, const Value& value)
 KVTEMP
 void robinTable<Key, Value>::remove(const Key& key)
 {
-    int slot = findSlot(key);
-    if (slot != -1) // Leave it alone if it's empty.
+    size_t slot = findSlot(key);
+    if (slot != SIZE_MAX) // Leave it alone if it's empty.
         states.slot(slot) = TOMBSTONE;
 }
 

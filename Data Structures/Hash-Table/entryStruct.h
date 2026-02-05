@@ -19,9 +19,9 @@ struct Entry
     EntryState state;
 
     Entry();
-    Entry(Key key, Value value);
-    Entry(Key key, uint32_t hash);
-    Entry(Key key, Value value, uint32_t hash);
+    Entry(const Key& key, const Value& value);
+    Entry(const Key& key, uint32_t hash);
+    Entry(const Key& key, const Value& value, uint32_t hash);
     ~Entry() = default;
     bool operator==(const Entry& other) const;
 };
@@ -31,15 +31,16 @@ Entry<Key, Value>::Entry() :
     state(EMPTY) {}
 
 KVTEMP
-Entry<Key, Value>::Entry(Key key, Value value) :
+Entry<Key, Value>::Entry(const Key& key, const Value& value) :
     key(key), value(value), state(VALID) {}
 
 KVTEMP
-Entry<Key, Value>::Entry(Key key, uint32_t hash) :
+Entry<Key, Value>::Entry(const Key& key, uint32_t hash) :
     key(key), hash(hash), state(VALID) {}
 
 KVTEMP
-Entry<Key, Value>::Entry(Key key, Value value, uint32_t hash) :
+Entry<Key, Value>::Entry(const Key& key, const Value& value,
+    uint32_t hash) :
     key(key), value(value), hash(hash), state(VALID) {}
 
 KVTEMP

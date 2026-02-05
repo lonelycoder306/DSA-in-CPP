@@ -19,12 +19,12 @@
 template<typename Key>
 struct Hasher
 {
-    Hash operator()(Key key)
+    Hash operator()(const Key& key)
     {
         return hashKey(key);
     }
 
-    Hash operator()(Key key, size_t size)
+    Hash operator()(const Key& key, size_t size)
     {
         return hashKey(key, size);
     }
@@ -40,15 +40,15 @@ class chainTable
         static constexpr double loadFactor = 0.8;
         Array<EKVList> entries;
         // Number of buckets (slots in the array) we've used up.
-        int bucketCount;
+        size_t bucketCount;
         // Number of key-value pairs we have in the table.
         // Does not necessarily match bucketCount since
         // we can have multiple entries in a single bucket.
-        int entryCount;
+        size_t entryCount;
         // Will mark how far into the array we have entries to copy.
-        int maxIndex;
+        size_t maxIndex;
 
-        chainTable(int size);
+        chainTable(size_t size);
 
         void reorder();
         void resize();
@@ -58,20 +58,19 @@ class chainTable
     
     public:
         chainTable();
-        chainTable(const chainTable<Key, Value, HashFunc>& other);
+        chainTable(const chainTable& other);
+        chainTable& operator=(const chainTable& other);
         ~chainTable() = default;
-        chainTable<Key, Value, HashFunc>& operator=
-        (const chainTable<Key, Value, HashFunc>& other);
         Value& operator[](const Key& key);
 
         void add(const Key& key, const Value& value);
         Value* get(const Key& key);
         void set(const Key& key, const Value& value);
         void remove(const Key& key);
-        void merge(const chainTable<Key, Value, HashFunc>& other);
+        void merge(const chainTable& other);
 
-        int bucketSize();
-        int entrySize();
+        size_t bucketSize();
+        size_t entrySize();
 
         struct Pair
         {
@@ -186,12 +185,12 @@ class chainTable
 KVHTEMP
 chainTable<Key, Value, HashFunc>::chainTable() :
     getHash(HashFunc()), bucketCount(0), entryCount(0),
-    maxIndex(-1) {}
+    maxIndex(SIZE_MAX) {}
 
 KVHTEMP
 chainTable<Key, Value, HashFunc>::chainTable(const chainTable<Key, Value, HashFunc>& other)
 {
-    this->entries = Array<EKVList>(static_cast<int>(other.entries.capacity()));
+    this->entries = Array<EKVList>(other.entries.capacity());
     size_t size = this->entries.capacity();
     for (size_t i = 0; i < size; i++)
         entries.push(copy(other.entries[i]));
@@ -200,15 +199,15 @@ chainTable<Key, Value, HashFunc>::chainTable(const chainTable<Key, Value, HashFu
 }
 
 KVHTEMP
-chainTable<Key, Value, HashFunc>::chainTable(int size) :
+chainTable<Key, Value, HashFunc>::chainTable(size_t size) :
     getHash(HashFunc()), entries(size), bucketCount(0),
-    entryCount(0), maxIndex(-1) {}
+    entryCount(0), maxIndex(SIZE_MAX) {}
 
 KVHTEMP
 chainTable<Key, Value, HashFunc>& chainTable<Key, Value, HashFunc>
 ::operator=(const chainTable<Key, Value, HashFunc>& other)
 {
-    this->entries = Array<EKVList>(static_cast<int>(other.entries.capacity()));
+    this->entries = Array<EKVList>(other.entries.capacity());
     size_t size = this->entries.capacity();
     for (size_t i = 0; i < size; i++)
         entries.push(copy(other.entries[i]));
@@ -226,9 +225,12 @@ EKV& chainTable<Key, Value, HashFunc>::emptyAdd(const Key& key)
     resize(); // Grow if needed.
 
     uint32_t hash = getHash(key);
-    uint32_t bitmask = (uint32_t)(entries.capacity() - 1);
-    int index = static_cast<int>(hash & bitmask);
-    maxIndex = (index > maxIndex) ? index : maxIndex;
+    uint32_t bitmask = static_cast<uint32_t>(entries.capacity() - 1);
+    size_t index = static_cast<size_t>(hash & bitmask);
+    if (maxIndex == SIZE_MAX)
+        maxIndex = index;
+    else
+        maxIndex = (index > maxIndex) ? index : maxIndex;
 
     EKVList& list = entries.slot(index);
     if (list.front() == nullptr) // Empty list.
@@ -256,10 +258,10 @@ void chainTable<Key, Value, HashFunc>::reorder()
 {
     // Easier to just construct a new table.
     size_t capacity = entries.capacity(); // Cover entire array.
-    chainTable<Key, Value, HashFunc> newTable(static_cast<int>(capacity));
+    chainTable<Key, Value, HashFunc> newTable(capacity);
     for (size_t i = 0; i < this->maxIndex + 1; i++)
     {
-        EKVList& list = entries.slot(static_cast<int>(i));
+        EKVList& list = entries.slot(i);
         
         // Handles empty lists as well.
         for (auto* ptr = list.front(); ptr != nullptr; ptr = ptr->next)
@@ -300,8 +302,8 @@ EKV* chainTable<Key, Value, HashFunc>::getEntry(const Key& key)
         return nullptr;
     
     uint32_t hash = getHash(key);
-    uint32_t bitmask = (uint32_t)(entries.capacity() - 1);
-    int index = static_cast<int>(hash & bitmask);
+    uint32_t bitmask = static_cast<uint32_t>(entries.capacity() - 1);
+    size_t index = hash & bitmask;
     EKVList& list = entries.slot(index);
     
     EKV temp(key, hash); // temp.value uninitialized.
@@ -327,9 +329,12 @@ void chainTable<Key, Value, HashFunc>::add(const Key& key,
     resize(); // Grow if needed.
 
     uint32_t hash = getHash(key);
-    uint32_t bitmask = (uint32_t)(entries.capacity() - 1);
-    int index = static_cast<int>(hash & bitmask);
-    maxIndex = (index > maxIndex) ? index : maxIndex;
+    uint32_t bitmask = static_cast<uint32_t>(entries.capacity() - 1);
+    size_t index = hash & bitmask;
+    if (maxIndex == SIZE_MAX)
+        maxIndex = index;
+    else
+        maxIndex = (index > maxIndex) ? index : maxIndex;
 
     EKVList& list = entries.slot(index);
     if (list.front() == nullptr) // Empty list.
@@ -370,8 +375,8 @@ void chainTable<Key, Value, HashFunc>::remove(const Key& key)
         return;
     
     uint32_t hash = getHash(key);
-    uint32_t bitmask = (uint32_t)(entries.capacity() - 1);
-    int index = static_cast<int>(hash & bitmask);
+    uint32_t bitmask = static_cast<uint32_t>(entries.capacity() - 1);
+    size_t index = hash & bitmask;
     EKVList& list = entries.slot(index);
     EKV temp = EKV(key, hash);
     if (!list.has(temp))
@@ -389,7 +394,7 @@ void chainTable<Key, Value, HashFunc>::merge(const chainTable<Key, Value, HashFu
     size_t capacity = other.entries.capacity();
     for (size_t i = 0; i < capacity; i++)
     {
-        EKVList& list = other.entries.slot(static_cast<int>(i));
+        EKVList& list = other.entries.slot(i);
         if (list.front() == nullptr)
             continue;
 
@@ -402,13 +407,13 @@ void chainTable<Key, Value, HashFunc>::merge(const chainTable<Key, Value, HashFu
 }
 
 KVHTEMP
-int chainTable<Key, Value, HashFunc>::bucketSize()
+size_t chainTable<Key, Value, HashFunc>::bucketSize()
 {
     return bucketCount;
 }
 
 KVHTEMP
-int chainTable<Key, Value, HashFunc>::entrySize()
+size_t chainTable<Key, Value, HashFunc>::entrySize()
 {
     return entryCount;
 }
@@ -424,7 +429,7 @@ void chainTable<Key, Value, HashFunc>::printTable()
 {
     for (size_t i = 0; i < entries.capacity(); i++)
     {
-        EKVList& list = entries.slot(static_cast<int>(i));
+        EKVList& list = entries.slot(i);
         if (list.front() == nullptr)
             std::cout << "Slot " << i << ": EMPTY\n";
         else

@@ -24,10 +24,10 @@ class Deque
     public:
         Deque();
         Deque(size_t size);
-        Deque(const Deque<T>& other);
-        Deque(Deque<T>&& other);
-        Deque<T>& operator=(const Deque<T>& other);
-        Deque<T>& operator=(Deque<T>&& other);
+        Deque(const Deque& other);
+        Deque(Deque&& other);
+        Deque& operator=(const Deque& other);
+        Deque& operator=(Deque&& other);
         ~Deque();
 
         inline T& operator[](size_t index) const;

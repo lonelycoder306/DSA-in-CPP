@@ -8,7 +8,7 @@
 using Hash = uint32_t;
 
 template<typename Key>
-inline Hash hashKey(Key key, size_t size = -1);
+inline Hash hashKey(const Key& key, size_t size = -1);
 template<typename T>
 inline Hash hashNumeric(T key);
 inline Hash hashChar(char key);
@@ -20,7 +20,7 @@ inline Hash hashCStr(const char* string, size_t length = -1);
 // with template implementations.
 
 template<typename Key>
-inline Hash hashKey(Key key, size_t size)
+inline Hash hashKey(const Key& key, size_t size)
 {
     if constexpr (std::is_arithmetic_v<Key>)
         return hashNumeric(key);
