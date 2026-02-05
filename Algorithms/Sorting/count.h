@@ -1,9 +1,10 @@
 #ifdef COUNT
 
-template<typename T>
-int range(T* elems, int count, T& min)
+#include <cstring>
+
+int range(int* elems, int count, int& min)
 {
-    T max = elems[0];
+    int max = elems[0];
     min = elems[0];
 
     for (int i = 0; i < count; i++)
@@ -15,20 +16,18 @@ int range(T* elems, int count, T& min)
     return (max - min + 1);
 }
 
-template<typename T>
-inline void sort(T*& elems, int count)
+inline void sort(int*& elems, int count)
 {
-    T min;
+    int min;
     int r = range(elems, count, min);
     int* temp = new int[r];
-    for (int i = 0; i < r; i++)
-        temp[i] = 0;
+    memset(temp, 0, r * sizeof(int));
     for (int i = 0; i < count; i++)
         temp[elems[i] - min]++;
     for (int i = 0; i < r - 1; i++)
         temp[i + 1] += temp[i];
 
-    T* newElems = new T[count];
+    int* newElems = new int[count];
     for (int i = 0; i < count; i++)
     {
         newElems[temp[elems[i] - min] - 1] = elems[i];

@@ -1,7 +1,6 @@
 #ifdef BUBBLE
 
-template<typename T>
-inline void sort(T* elems, int count)
+inline void sort(int* elems, int count)
 {
     bool sorted = false;
     while (!sorted)

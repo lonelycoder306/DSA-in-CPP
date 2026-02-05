@@ -1,16 +1,14 @@
 #ifdef INSERTION
 
-template<typename T>
-static inline void insert(T* elems, int start, int index)
+static inline void insert(int* elems, int start, int index)
 {
-    T temp = elems[index];
+    int temp = elems[index];
     for (int i = start + 1; i <= index; i++)
         elems[i] = elems[i - 1];
     elems[start] = temp;
 }
 
-template<typename T>
-inline void sort(T* elems, int count)
+inline void sort(int* elems, int count)
 {
     for (int i = 1; i < count; i++)
     {
