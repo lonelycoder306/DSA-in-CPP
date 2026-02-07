@@ -10,7 +10,7 @@ int search(T* elems, int count, T find)
         int mid = (begin + end) / 2;
         if (elems[mid] == find)
             return mid;
-        else if (mid > find)
+        else if (elems[mid] > find)
             end = mid - 1;
         else
             begin = mid + 1;
