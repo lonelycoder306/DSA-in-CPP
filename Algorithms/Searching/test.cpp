@@ -15,25 +15,6 @@
 #include "binary.h"
 #include "linear.h"
 
-template<typename T>
-bool isSorted(T* nums, int count)
-{
-    for (int i = 0; i < count - 1; i++)
-    {
-        if (nums[i] > nums[i + 1])
-            return false;
-    }
-
-    return true;
-}
-
-template<typename T>
-void print(T* nums, int count)
-{
-    for (int i = 0; i < count; i++)
-        std::cout << nums[i] << '\n';
-}
-
 int main()
 {
     using clock = std::chrono::high_resolution_clock;
@@ -52,7 +33,7 @@ int main()
     volatile int index = search(nums, SIZE, elem);
     auto finish = clock::now();
 
-    if (isSorted(nums, SIZE))
+    if (index != -1)
     {
         auto time = duration_cast<nano>(finish - start);
         printf("Time: %.10Lf\n", (long double) time.count() / 1'000'000'000);
@@ -61,8 +42,9 @@ int main()
     }
     else
     {
-        std::cout << "Failed to sort array.\n";
-        print(nums, SIZE);
+        std::cout << "Failed to find element.\n";
+        printf("Element: %d\n", elem);
+        printf("Index: %d\n", index);
         delete[] nums;
         return 1;
     }
