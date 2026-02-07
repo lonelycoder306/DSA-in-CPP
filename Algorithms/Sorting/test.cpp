@@ -20,8 +20,7 @@
 #include "radix.h"
 #include "selection.h"
 
-template<typename T>
-bool isSorted(T* nums, int count)
+bool isSorted(int* nums, int count)
 {
     for (int i = 0; i < count - 1; i++)
     {
@@ -32,8 +31,7 @@ bool isSorted(T* nums, int count)
     return true;
 }
 
-template<typename T>
-void print(T* nums, int count)
+void print(int* nums, int count)
 {
     for (int i = 0; i < count; i++)
         std::cout << nums[i] << '\n';
