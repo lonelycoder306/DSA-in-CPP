@@ -28,46 +28,41 @@ int maxDigits(int* elems, int count)
     return getDigits(max);
 }
 
-void combineBuckets(int* buckets, int* elems, int count, int indices[])
+void combineBuckets(int* buckets, int* elems, int count, int counters[])
 {
     int pos = 0;
     for (int i = 0; i < 10; i++)
     {
-        int max = indices[i];
+        int max = counters[i];
         for (int j = 0; j < max; j++)
-            elems[pos++] = buckets[(count + 1) * i + j];
+            elems[pos++] = buckets[count * i + j];
     }
 }
 
 inline void sort(int* elems, int count)
 {
     constexpr int numDigits = 10;
-    // count + 1 allows us to add a terminating
-    // -1 at the end of each, while still possibly
-    // storing the entire array in each bucket.
-    int* buckets = new int[numDigits * (count + 1)];
-    int size = numDigits * (count + 1);
-    memset(buckets, -1, numDigits * (count + 1) * sizeof(int));
+    int* buckets = new int[numDigits * count];
+    int size = numDigits * count;
     int length = maxDigits(elems, count);
 
     for (int i = 0; i < length; i++)
     {
         int max = static_cast<int>(pow(10, i));
-        int indices[10] = {0};
+        int counters[10] = {0};
         for (int j = 0; j < count; j++)
         {
             if (elems[j] < max)
-                buckets[indices[0]++] = elems[j];
+                buckets[counters[0]++] = elems[j];
             else
             {
                 int digit = (elems[j] % (max * 10));
                 digit /= max;
-                buckets[digit * (count + 1) + indices[digit]++] = elems[j];
+                buckets[digit * count + counters[digit]++] = elems[j];
             }
         }
 
-        combineBuckets(buckets, elems, count, indices);
-        memset(buckets, -1, numDigits * (count + 1) * sizeof(int));
+        combineBuckets(buckets, elems, count, counters);
     }
 }
 
