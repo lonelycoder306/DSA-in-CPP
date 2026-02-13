@@ -7,6 +7,7 @@ Insertion - 0.0000869900
 Count -     0.0000252000
 Quick -     0.0000963000
 Radix -     0.0000690000
+Merge -     0.0002052510 / 0.0001814510 (memcpy)
 
 Sorting 10,000 random numbers (no optimization):
 Bubble -    0.3223375160
@@ -15,6 +16,7 @@ Insertion - 0.0013321000
 Count -     0.0001479000
 Quick -     0.0011734240
 Radix -     0.0006111970
+Merge -     0.0031397670 / 0.0025634430 (memcpy)
 
 Sorting 1000 random numbers (-O2):
 Bubble -    0.0014741010
@@ -23,6 +25,7 @@ Insertion - 0.0000220000
 Count -     0.0000092000
 Quick -     0.0000549000
 Radix -     0.0000414000
+Merge -     0.0001785800 / 0.0001460880 (memcpy)
 
 Sorting 10,000 random numbers (-O2):
 Bubble -    0.1642682900
@@ -31,3 +34,4 @@ Insertion - 0.0002445000
 Count -     0.0000550000
 Quick -     0.0005592690
 Radix -     0.0003360000
+Merge -     0.0015259400 / memcpy not faster
