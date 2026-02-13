@@ -64,6 +64,7 @@ class LinkedList
         // Manage list.
 
         void sort(bool ascending = true);
+        void reverse();
         void merge(const LinkedList& other);
 
         // Manage sorted list.
@@ -481,6 +482,31 @@ void LinkedList<T>::sort(bool ascending)
     }
 
     isSorted = SORTED;
+}
+
+TEMP
+void LinkedList<T>::reverse()
+{
+    if (listLength <= 1) return;
+
+    ListNode<T>* first = head;
+    ListNode<T>* second = head->next;
+
+    // Disconnect next node from head (the head
+    // node will become the last node after we're
+    // done reversing).
+    head->next = nullptr;
+
+    while (second != nullptr)
+    {
+        ListNode<T>* temp = second->next;
+        second->next = first;
+        first = second;
+        second = temp;
+    }
+
+    // Reassign the head to the new first node.
+    head = first;
 }
 
 TEMP
