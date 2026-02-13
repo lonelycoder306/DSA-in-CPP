@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-int range(int* elems, int count, int& min)
+static inline int range(int* elems, int count, int& min)
 {
     int max = elems[0];
     min = elems[0];

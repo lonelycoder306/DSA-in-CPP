@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cstring>
 
-int getDigits(int elem)
+static inline int getDigits(int elem)
 {
     if (elem == 0) return 1;
 
@@ -17,7 +17,7 @@ int getDigits(int elem)
     return digits;
 }
 
-int maxDigits(int* elems, int count)
+static inline int maxDigits(int* elems, int count)
 {
     int max = elems[0];
     for (int i = 1; i < count; i++)
@@ -28,7 +28,8 @@ int maxDigits(int* elems, int count)
     return getDigits(max);
 }
 
-void combineBuckets(int* buckets, int* elems, int count, int counters[])
+static inline void combineBuckets(int* buckets, int* elems,
+    int count, int counters[])
 {
     int pos = 0;
     for (int i = 0; i < 10; i++)
