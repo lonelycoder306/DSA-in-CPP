@@ -108,7 +108,7 @@ void linearTable<Key, Value, HashFunc>::reorder()
     linearTable<Key, Value, HashFunc> newTable(capacity);
     for (size_t i = 0; i < maxIndex + 1; i++)
     {
-        EKV entry = entries.slot(i);
+        EKV& entry = entries.slot(i);
         if (entry.state != VALID)
             continue;
         newTable.add(entry.key, entry.value);
