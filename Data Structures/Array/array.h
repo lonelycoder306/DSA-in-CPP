@@ -123,7 +123,7 @@ Array<T>::Array(const Array<T>& other) :
 
 TEMP
 Array<T>::Array(Array<T>&& other) :
-    entries(other._entries), _count(other._count),
+    entries(other.entries), _count(other._count),
     _capacity(other._capacity)
 {
     other.entries = nullptr;
