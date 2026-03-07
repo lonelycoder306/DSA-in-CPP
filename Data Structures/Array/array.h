@@ -26,7 +26,8 @@ class Array
 
         // Basic operators.
         inline T& operator[](size_t index); // index < count.
-        bool operator==(const Array& other);
+        inline const T& operator[](size_t index) const; // index < count.
+        bool operator==(const Array& other) const;
 
         // Utility.
         void grow();
@@ -43,10 +44,14 @@ class Array
         void remove(const T& element);
         inline T pop();
         inline void popn(size_t n);
+
         inline size_t count() const;
         inline size_t capacity() const;
         inline T* front();
+        inline const T* front() const;
         inline T* back();
+        inline const T* back() const;
+
         inline T& slot(size_t index); // index < capacity.
         void slotInsert(const T& element, size_t index); // index < capacity.
         void fillArray(const T& element, bool capacity = false);
@@ -188,7 +193,16 @@ inline T& Array<T>::operator[](size_t index)
 }
 
 TEMP
-bool Array<T>::operator==(const Array<T>& other)
+inline const T& Array<T>::operator[](size_t index) const
+{
+    if (index >= _count)
+        throw std::out_of_range("Index out of range.");
+
+    return entries[index];
+}
+
+TEMP
+bool Array<T>::operator==(const Array<T>& other) const
 {
     if (this->_count != other._count) return false;
 
@@ -357,7 +371,19 @@ inline T* Array<T>::front()
 }
 
 TEMP
+inline const T* Array<T>::front() const
+{
+    return entries;
+}
+
+TEMP
 inline T* Array<T>::back()
+{
+    return entries + _count;
+}
+
+TEMP
+inline const T* Array<T>::back() const
 {
     return entries + _count;
 }
