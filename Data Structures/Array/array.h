@@ -55,8 +55,9 @@ class Array
         {
             private:
                 T* ptr;
-            
+
             public:
+                iterator() = default;
                 iterator(T* ptr);
                 iterator(const iterator& other);
                 iterator& operator=(const iterator& other);
@@ -75,8 +76,9 @@ class Array
         {
             private:
                 const T* ptr;
-            
+
             public:
+                const_iterator() = default;
                 const_iterator(const T* ptr);
                 const_iterator(const const_iterator& other);
                 const_iterator& operator=(const const_iterator& other);
