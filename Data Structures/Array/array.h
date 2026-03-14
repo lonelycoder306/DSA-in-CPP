@@ -47,6 +47,8 @@ class Array
 
         inline size_t count() const;
         inline size_t capacity() const;
+        inline bool empty() const;
+
         inline T* front();
         inline const T* front() const;
         inline T* back();
@@ -362,6 +364,12 @@ TEMP
 inline size_t Array<T>::capacity() const
 {
     return _capacity;
+}
+
+TEMP
+inline bool Array<T>::empty() const
+{
+    return _count == 0;
 }
 
 TEMP
