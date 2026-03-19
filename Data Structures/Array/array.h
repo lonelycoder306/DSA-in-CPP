@@ -472,6 +472,8 @@ typename arrIter& arrIter::operator++()
 TEMP
 typename arrIter arrIter::operator++(int n)
 {
+    (void) n;
+
     arrIter temp = *this;
     ptr++;
     return temp;
@@ -487,6 +489,8 @@ typename arrIter& arrIter::operator--()
 TEMP
 typename arrIter arrIter::operator--(int n)
 {
+    (void) n;
+
     arrIter temp = *this;
     ptr--;
     return temp;
@@ -557,6 +561,8 @@ typename constArrIter& constArrIter::operator++()
 TEMP
 typename constArrIter constArrIter::operator++(int n)
 {
+    (void) n;
+
     constArrIter temp = *this;
     ptr++;
     return temp;
@@ -572,6 +578,8 @@ typename constArrIter& constArrIter::operator--()
 TEMP
 typename constArrIter constArrIter::operator--(int n)
 {
+    (void) n;
+
     constArrIter temp = *this;
     ptr--;
     return *this;
