@@ -1,4 +1,5 @@
 #pragma once
+#include <climits>
 #include <cstdint>
 #include <cstring>
 #include <string>
@@ -8,12 +9,12 @@
 using Hash = uint32_t;
 
 template<typename Key>
-inline Hash hashKey(const Key& key, size_t size = -1);
+inline Hash hashKey(const Key& key, size_t size = SIZE_MAX);
 template<typename T>
 inline Hash hashNumeric(T key);
 inline Hash hashChar(char key);
 inline Hash hashString(std::string_view string);
-inline Hash hashCStr(const char* string, size_t length = -1);
+inline Hash hashCStr(const char* string, size_t length = SIZE_MAX);
 
 // Need to have the implementations here since
 // this file is #included in source files
@@ -75,7 +76,7 @@ inline Hash hashString(std::string_view string)
 
 inline Hash hashCStr(const char* string, size_t length)
 {
-    if (length == -1)
+    if (length == SIZE_MAX)
         length = strlen(string); // Null-terminated.
     const uint8_t* bytes = reinterpret_cast<const uint8_t*>(string);
     return hashBytes(bytes, length);
