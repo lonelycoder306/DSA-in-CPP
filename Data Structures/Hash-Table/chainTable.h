@@ -224,8 +224,8 @@ EKV& chainTable<Key, Value, HashFunc>::emptyAdd(const Key& key)
     
     resize(); // Grow if needed.
 
-    uint32_t hash = getHash(key);
-    uint32_t bitmask = static_cast<uint32_t>(entries.capacity() - 1);
+    std::uint32_t hash = getHash(key);
+    std::uint32_t bitmask = static_cast<std::uint32_t>(entries.capacity() - 1);
     size_t index = static_cast<size_t>(hash & bitmask);
     if (maxIndex == SIZE_MAX)
         maxIndex = index;
@@ -301,8 +301,8 @@ EKV* chainTable<Key, Value, HashFunc>::getEntry(const Key& key)
     if (entryCount == 0)
         return nullptr;
     
-    uint32_t hash = getHash(key);
-    uint32_t bitmask = static_cast<uint32_t>(entries.capacity() - 1);
+    std::uint32_t hash = getHash(key);
+    std::uint32_t bitmask = static_cast<std::uint32_t>(entries.capacity() - 1);
     size_t index = hash & bitmask;
     EKVList& list = entries.slot(index);
     
@@ -328,8 +328,8 @@ void chainTable<Key, Value, HashFunc>::add(const Key& key,
     
     resize(); // Grow if needed.
 
-    uint32_t hash = getHash(key);
-    uint32_t bitmask = static_cast<uint32_t>(entries.capacity() - 1);
+    std::uint32_t hash = getHash(key);
+    std::uint32_t bitmask = static_cast<std::uint32_t>(entries.capacity() - 1);
     size_t index = hash & bitmask;
     if (maxIndex == SIZE_MAX)
         maxIndex = index;
@@ -374,8 +374,8 @@ void chainTable<Key, Value, HashFunc>::remove(const Key& key)
     if (entryCount == 0)
         return;
     
-    uint32_t hash = getHash(key);
-    uint32_t bitmask = static_cast<uint32_t>(entries.capacity() - 1);
+    std::uint32_t hash = getHash(key);
+    std::uint32_t bitmask = static_cast<std::uint32_t>(entries.capacity() - 1);
     size_t index = hash & bitmask;
     EKVList& list = entries.slot(index);
     EKV temp = EKV(key, hash);

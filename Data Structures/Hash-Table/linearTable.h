@@ -136,8 +136,8 @@ void linearTable<Key, Value, HashFunc>::resize()
 KVHTEMP
 EKV& linearTable<Key, Value, HashFunc>::findSlot(const Key& key, size_t* pos)
 {
-    uint32_t hash = getHash(key);
-    uint32_t bitmask = static_cast<uint32_t>(entries.capacity() - 1);
+    std::uint32_t hash = getHash(key);
+    std::uint32_t bitmask = static_cast<std::uint32_t>(entries.capacity() - 1);
     size_t index = hash & bitmask;
 
     EKV* tombstone = nullptr;
@@ -177,7 +177,7 @@ EKV& linearTable<Key, Value, HashFunc>::emptyAdd(const Key& key)
     
     resize(); // Grow if needed.
 
-    uint32_t hash = getHash(key);
+    std::uint32_t hash = getHash(key);
     size_t index;
     EKV& newEntry = findSlot(key, &index);
 
@@ -209,7 +209,7 @@ void linearTable<Key, Value, HashFunc>::add(const Key& key,
 
     resize(); // Grow size if needed.
 
-    uint32_t hash = getHash(key);
+    std::uint32_t hash = getHash(key);
     size_t index;
     EKV& newEntry = findSlot(key, &index);
 
