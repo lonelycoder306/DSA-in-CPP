@@ -137,7 +137,7 @@ KVHTEMP
 EKV& linearTable<Key, Value, HashFunc>::findSlot(const Key& key, size_t* pos)
 {
     std::uint32_t hash = getHash(key);
-    std::uint32_t bitmask = static_cast<std::uint32_t>(entries.capacity() - 1);
+    auto bitmask = static_cast<std::uint32_t>(entries.capacity() - 1);
     size_t index = hash & bitmask;
 
     EKV* tombstone = nullptr;

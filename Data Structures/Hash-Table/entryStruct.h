@@ -3,7 +3,7 @@
 
 #define KVTEMP template<typename Key, typename Value>
 
-enum EntryState
+enum EntryState : std::uint8_t
 {
     VALID,
     TOMBSTONE,
