@@ -66,6 +66,7 @@ class linearTable
         void remove(const Key& key);
         void merge(const linearTable& other);
         size_t size();
+        void clear();
 
         // For debugging.
         void printTable();
@@ -274,6 +275,12 @@ KVHTEMP
 size_t linearTable<Key, Value, HashFunc>::size()
 {
     return count;
+}
+
+KVHTEMP
+void linearTable<Key, Value, HashFunc>::clear()
+{
+    entries.clear();
 }
 
 KVHTEMP
