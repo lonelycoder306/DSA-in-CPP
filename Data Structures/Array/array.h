@@ -52,6 +52,7 @@ class Array
         void remove(const T& element);
         inline T pop();
         inline void popn(size_t n);
+        inline void clear();
 
         [[nodiscard]] inline size_t count() const;
         [[nodiscard]] inline size_t capacity() const;
@@ -185,9 +186,7 @@ Array<T>& Array<T>::operator=(Array<T>&& other) noexcept
 TEMP
 Array<T>::~Array()
 {
-    _count = 0;
-    _capacity = 0;
-    delete[] entries;
+    clear();
 }
 
 TEMP
@@ -380,6 +379,14 @@ TEMP
 inline void Array<T>::popn(size_t n)
 {
     _count -= n;
+}
+
+TEMP
+inline void Array<T>::clear()
+{
+    _count = 0;
+    _capacity = 0;
+    delete[] entries;
 }
 
 TEMP
