@@ -57,10 +57,10 @@ class Array
         [[nodiscard]] inline size_t capacity() const;
         [[nodiscard]] inline bool empty() const;
 
-        [[nodiscard]] inline T* front();
-        [[nodiscard]] inline const T* front() const;
-        [[nodiscard]] inline T* back();
-        [[nodiscard]] inline const T* back() const;
+        [[nodiscard]] inline T& front();
+        [[nodiscard]] inline const T& front() const;
+        [[nodiscard]] inline T& back();
+        [[nodiscard]] inline const T& back() const;
 
         inline T& slot(size_t index); // index < capacity.
         void slotInsert(const T& element, size_t index); // index < capacity.
@@ -83,8 +83,8 @@ class Array
                 iterator operator++(int);
                 iterator& operator--();
                 iterator operator--(int);
-                bool operator==(const iterator& other);
-                bool operator!=(const iterator& other);
+                bool operator==(const iterator& other) const;
+                bool operator!=(const iterator& other) const;
         };
 
         class const_iterator
@@ -401,27 +401,27 @@ inline bool Array<T>::empty() const
 }
 
 TEMP
-inline T* Array<T>::front()
+inline T& Array<T>::front()
 {
-    return entries;
+    return entries[0];
 }
 
 TEMP
-inline const T* Array<T>::front() const
+inline const T& Array<T>::front() const
 {
-    return entries;
+    return entries[0];
 }
 
 TEMP
-inline T* Array<T>::back()
+inline T& Array<T>::back()
 {
-    return entries + _count;
+    return entries[_count - 1];
 }
 
 TEMP
-inline const T* Array<T>::back() const
+inline const T& Array<T>::back() const
 {
-    return entries + _count;
+    return entries[_count - 1];
 }
 
 TEMP
@@ -525,13 +525,13 @@ typename arrIter arrIter::operator--(int n)
 }
 
 TEMP
-bool arrIter::operator==(const arrIter& other)
+bool arrIter::operator==(const arrIter& other) const
 {
     return (this->ptr == other.ptr);
 }
 
 TEMP
-bool arrIter::operator!=(const arrIter& other)
+bool arrIter::operator!=(const arrIter& other) const
 {
     return (this->ptr != other.ptr);
 }
@@ -649,3 +649,6 @@ typename constArrIter Array<T>::cend() const noexcept
 {
     return const_iterator(back());
 }
+
+#undef arrIter
+#undef constArrIter
