@@ -289,7 +289,7 @@ void Array<T>::push(const T& element)
 TEMP
 int Array<T>::find(const T& element) const
 {
-    static_cast<has_equal_v<T>, "Type is not comparable.">;    
+    static_assert(has_equal_v<T>, "Type is not comparable.");
 
     if constexpr (can_compare_v<T>)
     {
