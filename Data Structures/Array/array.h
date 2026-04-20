@@ -1,4 +1,5 @@
 #pragma once
+#include "../generics.h"
 #include <cstddef>
 #include <cstring>
 #include <stdexcept>
@@ -283,13 +284,36 @@ void Array<T>::push(const T& element)
 TEMP
 int Array<T>::position(const T& element)
 {
-    for (size_t i = 0; i < _count; i++)
-    {
-        if (entries[i] == element)
-            return (int) i;
-    }
+    static_cast<has_equal_v<T>, "Type is not comparable.">;    
 
-    return -1;
+    if constexpr (can_compare_v<T>)
+    {
+        if (_count == 0) return -1;
+
+        size_t min = 0, max = _count - 1;
+        while (min <= max)
+        {
+            size_t mid = min + (max - min) / 2;
+            if (entries[mid] == element)
+                return (int) mid;
+            else if (entries[mid] < element)
+                min = mid + 1;
+            else
+                max = mid - 1;
+        }
+
+        return -1;
+    }
+    else
+    {
+        for (size_t i = 0; i < _count; i++)
+        {
+            if (entries[i] == element)
+                return (int) i;
+        }
+
+        return -1;
+    }
 }
 
 // When using this function, any unshifted
