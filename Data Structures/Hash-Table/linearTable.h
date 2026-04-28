@@ -35,7 +35,7 @@ struct Hasher
 template<typename Key, typename Value>
 struct Pair
 {
-    EKV* entry;
+    const EKV* entry;
     const Key* first;
     Value* second;
 
@@ -146,8 +146,8 @@ class linearTable
         class const_iterator
         {
             private:
-                EKV* ptr;
-                EKV* end;
+                const EKV* ptr;
+                const EKV* end;
                 IterPair pair;
 
             public:
@@ -572,8 +572,8 @@ KVHTEMP
 typename constTableIter linearTable<Key, Value, HashFunc>::cbegin()
 const noexcept
 {
-    EKV* ptr = &(entries.front());
-    EKV* end = ptr + entries.capacity();
+    const EKV* ptr = &(entries.front());
+    const EKV* end = ptr + entries.capacity();
 
     while ((ptr != end) && (ptr->state != VALID))
         ptr++;
@@ -584,7 +584,7 @@ KVHTEMP
 typename constTableIter linearTable<Key, Value, HashFunc>::cend()
 const noexcept
 {
-    EKV* end = &(entries.front()) + entries.capacity();
+    const EKV* end = &(entries.front()) + entries.capacity();
     return constTableIter(end, end);
 }
 
