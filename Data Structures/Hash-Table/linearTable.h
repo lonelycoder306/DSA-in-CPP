@@ -32,28 +32,34 @@ struct Hasher
     }
 };
 
-template<typename Key, typename Value>
+template<typename Key, typename Value, typename EKVType>
 struct Pair
 {
     const EKV* entry;
     const Key* first;
-    Value* second;
+
+    using ValueType = std::conditional_t<std::is_const_v<EKVType>,
+        const Value, Value>;
+
+    ValueType* second;
 
     Pair(EKV* entry) :
         entry(entry), first(&(entry->key)), second(&(entry->value)) {}
+    Pair(const EKV* entry) :
+        entry(entry), first(&(entry->key)), second(&(entry->value)) {}
 };
 
-template<typename Key, typename Value>
-struct std::tuple_size<Pair<Key, Value>> : std::integral_constant<size_t, 2> {};
+template<typename Key, typename Value, typename EKVType>
+struct std::tuple_size<Pair<Key, Value, EKVType>> : std::integral_constant<size_t, 2> {};
 
-template<typename Key, typename Value, size_t I>
-struct std::tuple_element<I, Pair<Key, Value>>
+template<typename Key, typename Value, typename EKVType, size_t I>
+struct std::tuple_element<I, Pair<Key, Value, EKVType>>
 {
     using type = std::conditional_t<I == 0, const Key, Value>;
 };
 
-template<size_t I, typename Key, typename Value>
-decltype(auto) get(Pair<Key, Value>& pair)
+template<size_t I, typename Key, typename Value, typename EKVType>
+decltype(auto) get(Pair<Key, Value, EKVType>& pair)
 {
     if constexpr (I == 0)
         return static_cast<const Key&>(*(pair.first));
@@ -61,8 +67,8 @@ decltype(auto) get(Pair<Key, Value>& pair)
         return static_cast<Value&>(*(pair.second));
 }
 
-template<size_t I, typename Key, typename Value>
-decltype(auto) get(const Pair<Key, Value>& pair)
+template<size_t I, typename Key, typename Value, typename EKVType>
+decltype(auto) get(const Pair<Key, Value, EKVType>& pair)
 {
     if constexpr (I == 0)
         return static_cast<const Key&>(*(pair.first));
@@ -70,8 +76,8 @@ decltype(auto) get(const Pair<Key, Value>& pair)
         return static_cast<const Value&>(*(pair.second));
 }
 
-template<size_t I, typename Key, typename Value>
-decltype(auto) get(Pair<Key, Value>&& pair)
+template<size_t I, typename Key, typename Value, typename EKVType>
+decltype(auto) get(Pair<Key, Value, EKVType>&& pair)
 {
     if constexpr (I == 0)
         return static_cast<const Key&&>(*(pair.first));
@@ -120,10 +126,10 @@ class linearTable
         // For debugging.
         void printTable();
 
-        using IterPair = Pair<Key, Value>;
-
         class iterator
         {
+            using IterPair = Pair<Key, Value, EKV>;
+
             private:
                 EKV* ptr;
                 EKV* end;
@@ -145,6 +151,8 @@ class linearTable
 
         class const_iterator
         {
+            using IterPair = Pair<Key, Value, const EKV>;
+
             private:
                 const EKV* ptr;
                 const EKV* end;
@@ -424,15 +432,13 @@ typename tableIter& tableIter::operator=(const tableIter& other)
 }
 
 KVHTEMP
-typename linearTable<Key, Value, HashFunc>::IterPair&
-tableIter::operator*()
+typename tableIter::IterPair& tableIter::operator*()
 {
     return pair;
 }
 
 KVHTEMP
-typename linearTable<Key, Value, HashFunc>::IterPair*
-tableIter::operator->()
+typename tableIter::IterPair* tableIter::operator->()
 {
     return &pair;
 }
@@ -443,7 +449,7 @@ typename tableIter& tableIter::operator++()
     ++ptr;
     while ((ptr != end) && (ptr->state != VALID))
         ++ptr;
-    pair = Pair(ptr);
+    pair = IterPair(ptr);
     return *this;
 }
 
@@ -453,7 +459,7 @@ typename tableIter& tableIter::operator++(int)
     ptr++;
     while ((ptr != end) && (ptr->state != VALID))
         ptr++;
-    pair = Pair(ptr);
+    pair = IterPair(ptr);
     return *this;
 }
 
@@ -509,15 +515,13 @@ typename constTableIter& constTableIter::operator=(const constTableIter& other)
 }
 
 KVHTEMP
-const typename linearTable<Key, Value, HashFunc>::IterPair&
-constTableIter::operator*() const
+const typename constTableIter::IterPair& constTableIter::operator*() const
 {
     return pair;
 }
 
 KVHTEMP
-const typename linearTable<Key, Value, HashFunc>::IterPair*
-constTableIter::operator->() const
+const typename constTableIter::IterPair* constTableIter::operator->() const
 {
     return &pair;
 }
@@ -528,7 +532,7 @@ typename constTableIter& constTableIter::operator++()
     ++ptr;
     while ((ptr != end) && (ptr->state != VALID))
         ++ptr;
-    pair = Pair(ptr);
+    pair = IterPair(ptr);
     return *this;
 }
 
@@ -538,7 +542,7 @@ typename constTableIter& constTableIter::operator++(int)
     ptr++;
     while ((ptr != end) && (ptr->state != VALID))
         ptr++;
-    pair = Pair(ptr);
+    pair = IterPair(ptr);
     return *this;
 }
 
