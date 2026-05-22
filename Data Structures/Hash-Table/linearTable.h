@@ -404,7 +404,7 @@ bool linearTable<Key, Value, HashFunc>::contains(const Key& key) const
 {
     if (count == 0) return false;
 
-    EKV& entry = findSlot(key, nullptr);
+    const EKV& entry = findSlot(key, nullptr);
     return (entry.state == VALID);
 }
 
