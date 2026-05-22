@@ -121,7 +121,9 @@ class linearTable
         bool contains(const Key& key) const;
         void remove(const Key& key);
         void merge(const linearTable& other);
-        size_t size();
+
+        bool empty() const;
+        size_t size() const;
         void clear();
 
         // For debugging.
@@ -387,7 +389,13 @@ void linearTable<Key, Value, HashFunc>::merge(
 }
 
 KVHTEMP
-size_t linearTable<Key, Value, HashFunc>::size()
+bool linearTable<Key, Value, HashFunc>::empty() const
+{
+    return (count == 0);
+}
+
+KVHTEMP
+size_t linearTable<Key, Value, HashFunc>::size() const
 {
     return count;
 }
