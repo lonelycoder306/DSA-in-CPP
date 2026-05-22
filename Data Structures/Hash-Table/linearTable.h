@@ -104,7 +104,7 @@ class linearTable
         // Searches for existing key.
         // Returns reference to available bucket
         // if not found.
-        EKV& findSlot(const Key& key, size_t* pos);
+        EKV& findSlot(const Key& key, size_t* pos) const;
         // Adds a key with no value.
         EKV& emptyAdd(const Key& key);
 
@@ -118,6 +118,7 @@ class linearTable
         void add(const Key& key, const Value& value);
         Value* get(const Key& key);
         void set(const Key& key, const Value& value);
+        bool contains(const Key& key) const;
         void remove(const Key& key);
         void merge(const linearTable& other);
         size_t size();
@@ -243,7 +244,7 @@ void linearTable<Key, Value, HashFunc>::resize()
 }
 
 KVHTEMP
-EKV& linearTable<Key, Value, HashFunc>::findSlot(const Key& key, size_t* pos)
+EKV& linearTable<Key, Value, HashFunc>::findSlot(const Key& key, size_t* pos) const
 {
     std::uint32_t hash = getHash(key);
     auto bitmask = static_cast<std::uint32_t>(entries.capacity() - 1);
@@ -357,6 +358,15 @@ void linearTable<Key, Value, HashFunc>::set(const Key& key,
         add(key, value);
     else
         entry.value = value;
+}
+
+KVHTEMP
+bool linearTable<Key, Value, HashFunc>::contains(const Key& key) const
+{
+    if (count == 0) return false;
+
+    EKV& entry = findSlot(key, nullptr);
+    return (entry.state == VALID);
 }
 
 KVHTEMP
