@@ -118,6 +118,7 @@ class linearTable
 
         void add(const Key& key, const Value& value);
         Value* get(const Key& key);
+        const Value* get(const Key& key) const;
         void set(const Key& key, const Value& value);
         bool contains(const Key& key) const;
         void remove(const Key& key);
@@ -382,6 +383,18 @@ Value* linearTable<Key, Value, HashFunc>::get(const Key& key)
     if (count == 0) return nullptr;
 
     EKV& entry = findSlot(key, nullptr);
+    if (entry.state != VALID)
+        return nullptr;
+    else
+        return &(entry.value);
+}
+
+KVHTEMP
+const Value* linearTable<Key, Value, HashFunc>::get(const Key& key) const
+{
+    if (count == 0) return nullptr;
+
+    const EKV& entry = findSlot(key, nullptr);
     if (entry.state != VALID)
         return nullptr;
     else
