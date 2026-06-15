@@ -11,6 +11,9 @@
 TEMP
 class Array
 {
+    static_assert(std::is_default_constructible_v<T>,
+        "Array element type must be default constructible.");
+
     private:
         T* entries;
         size_t _count;
@@ -48,6 +51,8 @@ class Array
         void grow();
 
         void push(const T& element);
+        template<typename... Args>
+        void emplace(Args... args);
         void insert(const T& element, size_t index);
         T erase(size_t index);
         void remove(const T& element);
@@ -306,6 +311,18 @@ void Array<T>::push(const T& element)
     if (_capacity <= _count)
         grow();
     entries[_count++] = element;
+}
+
+TEMP
+template<typename... Args>
+void Array<T>::emplace(Args... args)
+{
+    static_assert(std::is_constructible_v<T, Args...>,
+        "Object cannot be constructed from given argument list.");
+
+    if (_capacity <= _count)
+        grow();
+    entries[_count++] = T(std::forward<T>(args)...);
 }
 
 TEMP

@@ -1,6 +1,12 @@
 #include "array.h"
 #include <iostream>
 
+struct Dummy
+{
+    Dummy() = default;
+    Dummy(int x) {}
+};
+
 int main()
 {
     Array<int> array0;
@@ -22,5 +28,10 @@ int main()
     std::cout << "Array 1 Capacity: " << array1.capacity() << '\n';
     std::cout << "Array 2 Size: " << array2.count() << '\n';
     std::cout << "Array 2 Capacity: " << array2.capacity() << '\n';
+
+    Array<Dummy> array3;
+    array3.emplace(3);
+    std::cout << "Array 3 Size: " << array3.count() << '\n';
+
     return 0;
 }
