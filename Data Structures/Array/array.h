@@ -1,6 +1,7 @@
 #pragma once
 #include "../generics.h"
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <stdexcept>
 #include <type_traits>
@@ -74,6 +75,8 @@ class Array
         void slotInsert(const T& element, size_t index); // index < capacity.
         void fillArray(const T& element, bool capacity = false);
 
+        using iter_diff_type = int64_t;
+
         class iterator
         {
             private:
@@ -87,10 +90,19 @@ class Array
 
                 T& operator*() const;
                 T* operator->() const;
+
+                iterator operator+(iter_diff_type n);
+                iterator operator-(iter_diff_type n);
+                iterator& operator+=(iter_diff_type n);
+                iterator& operator-=(iter_diff_type n);
+
                 iterator& operator++();
                 iterator operator++(int);
                 iterator& operator--();
                 iterator operator--(int);
+
+                iter_diff_type operator-(const iterator& iter);
+
                 bool operator==(const iterator& other) const;
                 bool operator!=(const iterator& other) const;
         };
@@ -108,10 +120,19 @@ class Array
 
                 const T& operator*() const;
                 const T* operator->() const;
+
+                const_iterator operator+(iter_diff_type n);
+                const_iterator operator-(iter_diff_type n);
+                const_iterator& operator+=(iter_diff_type n);
+                const_iterator& operator-=(iter_diff_type n);
+
                 const_iterator& operator++();
                 const_iterator operator++(int);
                 const_iterator& operator--();
                 const_iterator operator--(int);
+
+                iter_diff_type operator-(const const_iterator& iter);
+
                 bool operator==(const const_iterator& other) const;
                 bool operator!=(const const_iterator& other) const;
         };
@@ -566,6 +587,32 @@ T* arrIter::operator->() const
 }
 
 TEMP
+typename arrIter arrIter::operator+(iter_diff_type n)
+{
+    return iterator(ptr + n);
+}
+
+TEMP
+typename arrIter arrIter::operator-(iter_diff_type n)
+{
+    return iterator(ptr - n);
+}
+
+TEMP
+typename arrIter& arrIter::operator+=(iter_diff_type n)
+{
+    ptr += n;
+    return *this;
+}
+
+TEMP
+typename arrIter& arrIter::operator-=(iter_diff_type n)
+{
+    ptr -= n;
+    return *this;
+}
+
+TEMP
 typename arrIter& arrIter::operator++()
 {
     ++ptr;
@@ -597,6 +644,12 @@ typename arrIter arrIter::operator--(int n)
     arrIter temp = *this;
     ptr--;
     return temp;
+}
+
+TEMP
+typename Array<T>::iter_diff_type arrIter::operator-(const arrIter& iter)
+{
+    return this->ptr - iter.ptr;
 }
 
 TEMP
@@ -656,6 +709,32 @@ const T* constArrIter::operator->() const
 }
 
 TEMP
+typename constArrIter constArrIter::operator+(iter_diff_type n)
+{
+    return const_iterator(ptr + n);
+}
+
+TEMP
+typename constArrIter constArrIter::operator-(iter_diff_type n)
+{
+    return const_iterator(ptr - n);
+}
+
+TEMP
+typename constArrIter& constArrIter::operator+=(iter_diff_type n)
+{
+    ptr += n;
+    return *this;
+}
+
+TEMP
+typename constArrIter& constArrIter::operator-=(iter_diff_type n)
+{
+    ptr -= n;
+    return *this;
+}
+
+TEMP
 typename constArrIter& constArrIter::operator++()
 {
     ++ptr;
@@ -687,6 +766,12 @@ typename constArrIter constArrIter::operator--(int n)
     constArrIter temp = *this;
     ptr--;
     return *this;
+}
+
+TEMP
+typename Array<T>::iter_diff_type constArrIter::operator-(const constArrIter& iter)
+{
+    return this->ptr - iter.ptr;
 }
 
 TEMP
