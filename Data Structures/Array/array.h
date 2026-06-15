@@ -55,7 +55,7 @@ class Array
         inline void popn(size_t n);
         inline void clear();
 
-        int find(const T& element) const;
+        int find(const T& element, bool sorted = false) const;
         template<typename Pred>
         int find_first_if(Pred p) const;
         template<typename Pred>
@@ -309,38 +309,38 @@ void Array<T>::push(const T& element)
 }
 
 TEMP
-int Array<T>::find(const T& element) const
+int Array<T>::find(const T& element, bool sorted) const
 {
     static_assert(has_equal_v<T>, "Type is not comparable.");
+    auto defaultEquality = [&](const T& other) -> bool {
+        return element == other;
+    };
 
     if constexpr (can_compare_v<T>)
     {
-        if (_count == 0) return -1;
-
-        size_t min = 0, max = _count - 1;
-        while (min <= max)
+        if (sorted)
         {
-            size_t mid = min + (max - min) / 2;
-            if (entries[mid] == element)
-                return (int) mid;
-            else if (entries[mid] < element)
-                min = mid + 1;
-            else
-                max = mid - 1;
-        }
+            if (_count == 0) return -1;
 
-        return -1;
+            size_t min = 0, max = _count - 1;
+            while (min <= max)
+            {
+                size_t mid = min + (max - min) / 2;
+                if (entries[mid] == element)
+                    return (int) mid;
+                else if (entries[mid] < element)
+                    min = mid + 1;
+                else
+                    max = mid - 1;
+            }
+
+            return -1;
+        }
+        else
+            return find_first_if(defaultEquality);
     }
     else
-    {
-        for (size_t i = 0; i < _count; i++)
-        {
-            if (entries[i] == element)
-                return (int) i;
-        }
-
-        return -1;
-    }
+        return find_first_if(defaultEquality);
 }
 
 TEMP
