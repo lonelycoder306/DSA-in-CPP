@@ -16,7 +16,7 @@ int main()
     for (const auto& i : array1)
         std::cout << i << '\n';
     std::cout << "Popped: " << array1.pop() << '\n';
-    
+
     Array<int> array2 = array1;
     std::cout << "Array 1 Size: " << array1.count() << '\n';
     std::cout << "Array 1 Capacity: " << array1.capacity() << '\n';
