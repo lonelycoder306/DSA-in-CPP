@@ -1,4 +1,4 @@
-class compactTable
+class CompactTable
 {
     private:
         

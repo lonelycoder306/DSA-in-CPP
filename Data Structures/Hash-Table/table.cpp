@@ -1,11 +1,11 @@
-#include "chainTable.h"
+// #include "chainTable.h"
 #include "linearTable.h"
 #include "robinTable.h"
 #include <chrono>
 #include <iostream>
 
 #ifndef TABLE
-	#define TABLE chainTable
+	#define TABLE LinearTable
 #endif
 
 #ifndef SIZE

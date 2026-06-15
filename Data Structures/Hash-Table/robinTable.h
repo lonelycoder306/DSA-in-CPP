@@ -21,7 +21,7 @@
 #define KVTEMP template<typename Key, typename Value>
 
 KVTEMP
-class robinTable
+class RobinTable
 {
     private:
         // Keeping the same load factor for 
@@ -34,7 +34,7 @@ class robinTable
         size_t count;
         size_t maxIndex;
 
-        robinTable(size_t size);
+        RobinTable(size_t size);
 
         void reorder();
         void resize();
@@ -43,17 +43,17 @@ class robinTable
             Hash hash, int index);
     
     public:
-        robinTable();
-        robinTable(const robinTable& other);
-        ~robinTable() = default;
-        robinTable& operator=(const robinTable& other);
+        RobinTable();
+        RobinTable(const RobinTable& other);
+        ~RobinTable() = default;
+        RobinTable& operator=(const RobinTable& other);
         Value& operator[](const Key& key);
 
         void add(const Key& key, const Value& value);
         Value* get(const Key& key);
         void set(const Key& key, const Value& value);
         void remove(const Key& key);
-        void merge(const robinTable& other);
+        void merge(const RobinTable& other);
         size_t size();
 
         // For debugging.
@@ -61,7 +61,7 @@ class robinTable
 };
 
 KVTEMP
-robinTable<Key, Value>::robinTable() :
+RobinTable<Key, Value>::RobinTable() :
     hashes(2), keys(2), values(2), states(2),
     count(0), maxIndex(SIZE_MAX)
 {
@@ -69,12 +69,12 @@ robinTable<Key, Value>::robinTable() :
 }
 
 KVTEMP
-robinTable<Key, Value>::robinTable(const robinTable<Key, Value>& other) :
+RobinTable<Key, Value>::RobinTable(const RobinTable<Key, Value>& other) :
     hashes(other.hashes), keys(other.keys), values(other.values),
     states(other.states), count(other.count), maxIndex(other.maxIndex) {}
 
 KVTEMP
-robinTable<Key, Value>::robinTable(size_t size) :
+RobinTable<Key, Value>::RobinTable(size_t size) :
     hashes(size), keys(size), values(size),
     states(size), count(0), maxIndex(SIZE_MAX)
 {
@@ -82,8 +82,8 @@ robinTable<Key, Value>::robinTable(size_t size) :
 }
 
 KVTEMP
-robinTable<Key, Value>& robinTable<Key, Value>::
-operator=(const robinTable<Key, Value>& other)
+RobinTable<Key, Value>& RobinTable<Key, Value>::
+operator=(const RobinTable<Key, Value>& other)
 {
     this->hashes = other.hashes;
     this->keys = other.keys;
@@ -94,10 +94,10 @@ operator=(const robinTable<Key, Value>& other)
 }
 
 KVTEMP
-void robinTable<Key, Value>::reorder()
+void RobinTable<Key, Value>::reorder()
 {
     size_t capacity = states.capacity();
-    robinTable<Key, Value> newTable(capacity);
+    RobinTable<Key, Value> newTable(capacity);
     for (size_t i = 0; i < maxIndex + 1; i++)
     {
         EntryState state = states.slot(i);
@@ -115,7 +115,7 @@ void robinTable<Key, Value>::reorder()
 }
 
 KVTEMP
-void robinTable<Key, Value>::resize()
+void RobinTable<Key, Value>::resize()
 {   
     if ((states.capacity() * loadFactor) < count + 1)
     {
@@ -138,7 +138,7 @@ void robinTable<Key, Value>::resize()
 }
 
 KVTEMP
-size_t robinTable<Key, Value>::findSlot(const Key& key)
+size_t RobinTable<Key, Value>::findSlot(const Key& key)
 {
     Hash hash = hashKey(key);
     size_t bitmask = hashes.capacity() - 1;
@@ -166,7 +166,7 @@ size_t robinTable<Key, Value>::findSlot(const Key& key)
 }
 
 KVTEMP
-inline void robinTable<Key, Value>::insertPair(const Key& key,
+inline void RobinTable<Key, Value>::insertPair(const Key& key,
     const Value& value, Hash hash, int index)
 {
     keys.slot(index) = key;
@@ -182,7 +182,7 @@ inline void robinTable<Key, Value>::insertPair(const Key& key,
 }
 
 KVTEMP
-void robinTable<Key, Value>::add(const Key& key, const Value& value)
+void RobinTable<Key, Value>::add(const Key& key, const Value& value)
 {
     int slot = findSlot(key);
     if (slot != SIZE_MAX)
@@ -223,7 +223,7 @@ void robinTable<Key, Value>::add(const Key& key, const Value& value)
 }
 
 KVTEMP
-Value* robinTable<Key, Value>::get(const Key& key)
+Value* RobinTable<Key, Value>::get(const Key& key)
 {
     if (count == 0) return nullptr;
     
@@ -235,7 +235,7 @@ Value* robinTable<Key, Value>::get(const Key& key)
 }
 
 KVTEMP
-void robinTable<Key, Value>::set(const Key& key, const Value& value)
+void RobinTable<Key, Value>::set(const Key& key, const Value& value)
 {
     size_t slot = findSlot(key);
     if (slot == SIZE_MAX)
@@ -245,7 +245,7 @@ void robinTable<Key, Value>::set(const Key& key, const Value& value)
 }
 
 KVTEMP
-void robinTable<Key, Value>::remove(const Key& key)
+void RobinTable<Key, Value>::remove(const Key& key)
 {
     size_t slot = findSlot(key);
     if (slot != SIZE_MAX) // Leave it alone if it's empty.
@@ -253,7 +253,7 @@ void robinTable<Key, Value>::remove(const Key& key)
 }
 
 KVTEMP
-void robinTable<Key, Value>::merge(const robinTable<Key, Value>& other)
+void RobinTable<Key, Value>::merge(const RobinTable<Key, Value>& other)
 {
     size_t capacity = other.hashes.capacity();
     for (size_t i = 0; i < capacity; i++)
@@ -264,13 +264,13 @@ void robinTable<Key, Value>::merge(const robinTable<Key, Value>& other)
 }
 
 KVTEMP
-size_t robinTable<Key, Value>::size()
+size_t RobinTable<Key, Value>::size()
 {
     return count;
 }
 
 KVTEMP
-void robinTable<Key, Value>::printTable()
+void RobinTable<Key, Value>::printTable()
 {
     size_t cap = states.capacity();
     for (size_t i = 0; i < cap; i++)

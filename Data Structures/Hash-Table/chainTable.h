@@ -31,7 +31,7 @@ struct Hasher
 };
 
 KVHTEMP_DEFAULT
-class chainTable
+class ChainTable
 {
     private:
         HashFunc getHash;
@@ -48,7 +48,7 @@ class chainTable
         // Will mark how far into the array we have entries to copy.
         size_t maxIndex;
 
-        chainTable(size_t size);
+        ChainTable(size_t size);
 
         void reorder();
         void resize();
@@ -57,17 +57,17 @@ class chainTable
         EKV* getEntry(const Key& key);
     
     public:
-        chainTable();
-        chainTable(const chainTable& other);
-        chainTable& operator=(const chainTable& other);
-        ~chainTable() = default;
+        ChainTable();
+        ChainTable(const ChainTable& other);
+        ChainTable& operator=(const ChainTable& other);
+        ~ChainTable() = default;
         Value& operator[](const Key& key);
 
         void add(const Key& key, const Value& value);
         Value* get(const Key& key);
         void set(const Key& key, const Value& value);
         void remove(const Key& key);
-        void merge(const chainTable& other);
+        void merge(const ChainTable& other);
 
         size_t bucketSize();
         size_t entrySize();
@@ -183,12 +183,12 @@ class chainTable
 };
 
 KVHTEMP
-chainTable<Key, Value, HashFunc>::chainTable() :
+ChainTable<Key, Value, HashFunc>::ChainTable() :
     getHash(HashFunc()), bucketCount(0), entryCount(0),
     maxIndex(SIZE_MAX) {}
 
 KVHTEMP
-chainTable<Key, Value, HashFunc>::chainTable(const chainTable<Key, Value, HashFunc>& other)
+ChainTable<Key, Value, HashFunc>::ChainTable(const ChainTable<Key, Value, HashFunc>& other)
 {
     this->entries = Array<EKVList>(other.entries.capacity());
     size_t size = this->entries.capacity();
@@ -199,13 +199,13 @@ chainTable<Key, Value, HashFunc>::chainTable(const chainTable<Key, Value, HashFu
 }
 
 KVHTEMP
-chainTable<Key, Value, HashFunc>::chainTable(size_t size) :
+ChainTable<Key, Value, HashFunc>::ChainTable(size_t size) :
     getHash(HashFunc()), entries(size), bucketCount(0),
     entryCount(0), maxIndex(SIZE_MAX) {}
 
 KVHTEMP
-chainTable<Key, Value, HashFunc>& chainTable<Key, Value, HashFunc>
-::operator=(const chainTable<Key, Value, HashFunc>& other)
+ChainTable<Key, Value, HashFunc>& ChainTable<Key, Value, HashFunc>
+::operator=(const ChainTable<Key, Value, HashFunc>& other)
 {
     this->entries = Array<EKVList>(other.entries.capacity());
     size_t size = this->entries.capacity();
@@ -216,7 +216,7 @@ chainTable<Key, Value, HashFunc>& chainTable<Key, Value, HashFunc>
 }
 
 KVHTEMP
-EKV& chainTable<Key, Value, HashFunc>::emptyAdd(const Key& key)
+EKV& ChainTable<Key, Value, HashFunc>::emptyAdd(const Key& key)
 {
     // This method is only called internally,
     // so we can skip checks for the key existing
@@ -244,7 +244,7 @@ EKV& chainTable<Key, Value, HashFunc>::emptyAdd(const Key& key)
 }
 
 KVHTEMP
-Value& chainTable<Key, Value, HashFunc>::operator[](const Key& key)
+Value& ChainTable<Key, Value, HashFunc>::operator[](const Key& key)
 {
     EKV* entry = getEntry(key);
     if (entry == nullptr)
@@ -254,11 +254,11 @@ Value& chainTable<Key, Value, HashFunc>::operator[](const Key& key)
 }
 
 KVHTEMP
-void chainTable<Key, Value, HashFunc>::reorder()
+void ChainTable<Key, Value, HashFunc>::reorder()
 {
     // Easier to just construct a new table.
     size_t capacity = entries.capacity(); // Cover entire array.
-    chainTable<Key, Value, HashFunc> newTable(capacity);
+    ChainTable<Key, Value, HashFunc> newTable(capacity);
     for (size_t i = 0; i < this->maxIndex + 1; i++)
     {
         EKVList& list = entries.slot(i);
@@ -281,7 +281,7 @@ void chainTable<Key, Value, HashFunc>::reorder()
 // we may need to trigger resizing earlier if
 // we reach the load factor.
 KVHTEMP
-void chainTable<Key, Value, HashFunc>::resize()
+void ChainTable<Key, Value, HashFunc>::resize()
 {
     if ((entries.capacity() * loadFactor) < bucketCount + 1)
     {
@@ -296,7 +296,7 @@ void chainTable<Key, Value, HashFunc>::resize()
 }
 
 KVHTEMP
-EKV* chainTable<Key, Value, HashFunc>::getEntry(const Key& key)
+EKV* ChainTable<Key, Value, HashFunc>::getEntry(const Key& key)
 {
     if (entryCount == 0)
         return nullptr;
@@ -316,7 +316,7 @@ EKV* chainTable<Key, Value, HashFunc>::getEntry(const Key& key)
 }
 
 KVHTEMP
-void chainTable<Key, Value, HashFunc>::add(const Key& key,
+void ChainTable<Key, Value, HashFunc>::add(const Key& key,
     const Value& value)
 {
     EKV* temp = getEntry(key);
@@ -347,7 +347,7 @@ void chainTable<Key, Value, HashFunc>::add(const Key& key,
 }
 
 KVHTEMP
-Value* chainTable<Key, Value, HashFunc>::get(const Key& key)
+Value* ChainTable<Key, Value, HashFunc>::get(const Key& key)
 {
     EKV* entry = getEntry(key);
     if (entry == nullptr)
@@ -357,7 +357,7 @@ Value* chainTable<Key, Value, HashFunc>::get(const Key& key)
 }
 
 KVHTEMP
-void chainTable<Key, Value, HashFunc>::set(const Key& key,
+void ChainTable<Key, Value, HashFunc>::set(const Key& key,
     const Value& value)
 {
     EKV* entry = getEntry(key);
@@ -369,7 +369,7 @@ void chainTable<Key, Value, HashFunc>::set(const Key& key,
 }
 
 KVHTEMP
-void chainTable<Key, Value, HashFunc>::remove(const Key& key)
+void ChainTable<Key, Value, HashFunc>::remove(const Key& key)
 {
     if (entryCount == 0)
         return;
@@ -389,7 +389,7 @@ void chainTable<Key, Value, HashFunc>::remove(const Key& key)
 }
 
 KVHTEMP
-void chainTable<Key, Value, HashFunc>::merge(const chainTable<Key, Value, HashFunc>& other)
+void ChainTable<Key, Value, HashFunc>::merge(const ChainTable<Key, Value, HashFunc>& other)
 {
     size_t capacity = other.entries.capacity();
     for (size_t i = 0; i < capacity; i++)
@@ -407,25 +407,25 @@ void chainTable<Key, Value, HashFunc>::merge(const chainTable<Key, Value, HashFu
 }
 
 KVHTEMP
-size_t chainTable<Key, Value, HashFunc>::bucketSize()
+size_t ChainTable<Key, Value, HashFunc>::bucketSize()
 {
     return bucketCount;
 }
 
 KVHTEMP
-size_t chainTable<Key, Value, HashFunc>::entrySize()
+size_t ChainTable<Key, Value, HashFunc>::entrySize()
 {
     return entryCount;
 }
 
 // Pair struct.
 KVHTEMP
-chainTable<Key, Value, HashFunc>::Pair::Pair(EKV entry) :
+ChainTable<Key, Value, HashFunc>::Pair::Pair(EKV entry) :
     first(entry.key), second(entry.value) {}
 
 // For debugging.
 KVHTEMP
-void chainTable<Key, Value, HashFunc>::printTable()
+void ChainTable<Key, Value, HashFunc>::printTable()
 {
     for (size_t i = 0; i < entries.capacity(); i++)
     {
