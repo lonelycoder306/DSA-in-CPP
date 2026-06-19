@@ -35,14 +35,15 @@ struct Hasher
 template<typename Key, typename Value, typename EKVType>
 struct Pair
 {
-    const EKV* entry;
-    const Key* first;
+    const EKV* entry{};
+    const Key* first{};
 
     using ValueType = std::conditional_t<std::is_const_v<EKVType>,
         const Value, Value>;
 
-    ValueType* second;
+    ValueType* second{};
 
+    Pair() = default;
     Pair(EKV* entry) :
         entry(entry), first(&(entry->key)), second(&(entry->value)) {}
     Pair(const EKV* entry) :
