@@ -91,7 +91,7 @@ class LinearTable
 {
     private:
         HashFunc getHash;
-        // Keeping the same load factor for 
+        // Keeping the same load factor for
         // both implementations.
         static constexpr double loadFactor = 0.8;
         Array<EKV> entries;
@@ -204,6 +204,9 @@ LinearTable<Key, Value, HashFunc>& LinearTable<Key, Value, HashFunc>::
 operator=(const LinearTable<Key, Value, HashFunc>& other)
 {
     this->entries = other.entries;
+    this->getHash = other.getHash;
+    this->count = other.count;
+    this->maxIndex = other.maxIndex;
     return *this;
 }
 
@@ -235,7 +238,7 @@ void LinearTable<Key, Value, HashFunc>::reorder()
 
 KVHTEMP
 void LinearTable<Key, Value, HashFunc>::resize()
-{   
+{
     if ((entries.capacity() * loadFactor) < count + 1)
     {
         if (count == 0)
@@ -264,10 +267,10 @@ EKV& LinearTable<Key, Value, HashFunc>::findSlot(const Key& key, size_t* pos)
     {
         if (pos != nullptr)
             *pos = index;
-        
+
         if (entry->key == key)
             return *entry;
-        
+
         if (entry->state == TOMBSTONE)
             tombstone = entry;
 
@@ -300,10 +303,10 @@ findSlot(const Key& key, size_t* pos) const
     {
         if (pos != nullptr)
             *pos = index;
-        
+
         if (entry->key == key)
             return *entry;
-        
+
         if (entry->state == TOMBSTONE)
             tombstone = entry;
 
@@ -325,7 +328,7 @@ EKV& LinearTable<Key, Value, HashFunc>::emptyAdd(const Key& key)
     // This method is only called internally,
     // so we can skip checks for the key existing
     // while being careful to use the method properly.
-    
+
     resize(); // Grow if needed.
 
     std::uint32_t hash = getHash(key);
